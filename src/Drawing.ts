@@ -136,8 +136,9 @@ class DrawingRect
     { }
     updateState(drawing : Drawing)
     {
-        this.currentPosition.set(drawing.position.x, drawing.position.y);
-        this.currentPosition.add(new Vector(this.offsetX, this.offsetY));
+        this.currentPosition.set(this.offsetX, this.offsetY);
+        this.currentPosition.rotate(drawing.rotation);
+        this.currentPosition.add(drawing.position);
         this.currentSize.set(this.width*drawing.scale.x, this.height*drawing.scale.y);
     }
     draw(drawing : Drawing)
@@ -164,9 +165,10 @@ class DrawingRect
 class Drawing
 {
     static RectParam = class {
-        constructor(public width : number, public height : number, public offsetX : number, public offsetY : number) {}
+        constructor(public type : string, public width : number, public height : number, public offsetX : number, public offsetY : number, public angle : number=0) {}
     }
     position : Vector = new Vector(0,0);
+    rotation : number = 0;
     scale : Vector = new Vector(1,1); 
     private rects : DrawingRect[] = [];
     private color : Color;
@@ -189,6 +191,7 @@ class Drawing
             offsetY,
             this.hasCollision));
         this.lastAdded = new Drawing.RectParam(
+            'rect',
             width,
             height==0?width:height,
             offsetX,
@@ -196,20 +199,71 @@ class Drawing
         );
         return this;
     }
-    addCircle()
+    addSegementedRect(width : number, height : number = 0, offsetX : number = 0, offsetY : number = 0, angle : number = 0)
     : Drawing
     {
+        this.lastAdded = new Drawing.RectParam(
+            'segmentedRect',
+            width,
+            height==0?width:height,
+            offsetX,
+            offsetY,
+            angle
+        );
+
+        let radians = angle * Math.PI / 180;
+        if(width > height)
+        {
+            radians += Math.PI / 2;
+            let twidth = width;
+            width = height;
+            height = twidth;
+        }
+        if(width < 0.01)
+        {
+            return this;
+        }
+        let n = Math.floor(height/width);
+        let o = -width * (n-1)/2;
+        let vo = width;
+        width *= 1.05;
+        for(let i = 0; i< n; i++)
+        {
+            this.rects.push(new DrawingRect(
+                this.color,
+                width,
+                width,
+                Math.sin(radians) * o + offsetX,
+                Math.cos(radians) * o + offsetY,
+                this.hasCollision));
+            o+=vo;
+        }
         return this;
     }
-    addArc()
+    addArc(angle : number, count : number = 1)
     : Drawing
     {
+        let offset = new Vector(this.lastAdded.offsetX, this.lastAdded.offsetY);
+        let currentAngle = this.lastAdded.angle;
+        for(let i=0;i<count;i++)
+        {
+            offset.rotate(angle);
+            if(this.lastAdded.type == 'rect')
+            {
+                this.addRect(this.lastAdded.width, this.lastAdded.height, offset.x, offset.y);
+            }
+            else
+            {
+                currentAngle -= angle;
+                this.addSegementedRect(this.lastAdded.width, this.lastAdded.height, offset.x, offset.y, currentAngle);
+            }
+        }
         return this;
     }
     mirrorX()
     : Drawing
     {
-        if(this.lastAdded instanceof Drawing.RectParam)
+        if(this.lastAdded.type == 'rect')
         {
             this.addRect(
                 this.lastAdded.width,
@@ -225,7 +279,7 @@ class Drawing
     mirrorY()
     : Drawing
     {
-        if(this.lastAdded instanceof Drawing.RectParam)
+        if(this.lastAdded.type == 'rect')
         {
             this.addRect(
                 this.lastAdded.width,

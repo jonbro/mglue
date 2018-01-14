@@ -6,4 +6,5 @@ export { Config } from "./Config";
 export { Mouse } from "./Mouse";
 export { Vector } from "./Vector";
 export { ParticleSystem } from "./ParticleSystem"
+export { Keyboard } from "./Keyboard"
 import "./Extensions";

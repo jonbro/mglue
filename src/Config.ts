@@ -7,6 +7,6 @@ class Config
     static soundTempo : number = 120;
     static soundVolume : number = 0.02;
     static debugMode : boolean = true;
-    static title : string = "WORM DRIVE";
+    static title : string = "GAME TITLE";
 }
 export { Config }

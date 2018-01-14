@@ -24,9 +24,24 @@ class Vector
         return this;
     }
     add(other : Vector)
+    : Vector
     {
         this.x += other.x;
         this.y += other.y;
+        return this;
+    }
+    rotate(angleDegrees : number)
+    : Vector
+    {
+        if(angleDegrees == 0)
+        {
+            return this;
+        }
+        let radians = angleDegrees * Math.PI / 180;
+        let tx = this.x;
+        this.x = this.x * Math.cos(radians) - this.y * Math.sin(radians);
+        this.y = tx * Math.sin(radians) + this.y * Math.cos(radians); 
+        return this;
     }
 }
 export { Vector };

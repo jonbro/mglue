@@ -42,6 +42,7 @@ class Actor
     private static groups : ActorGroup[] = [];
     position : Vector;
     velocity : Vector = new Vector(0,0);
+    rotation : number = 0;
     scale : Vector;
     drawing : Drawing;
     isDestroying : boolean = false;
@@ -99,6 +100,7 @@ class Actor
     lateUpdate()
     {
         this.position.add(this.velocity);
+        this.drawing.rotation = this.rotation;
         this.drawing.position.set(this.position.x, this.position.y);
         this.drawing.draw();
         this.age++;
