@@ -7,4 +7,5 @@ export { Mouse } from "./Mouse";
 export { Vector } from "./Vector";
 export { ParticleSystem } from "./ParticleSystem"
 export { Keyboard } from "./Keyboard"
+export { Random } from "./Random"
 import "./Extensions";

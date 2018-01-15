@@ -42,8 +42,9 @@ class Game
     private currentTime : number = 0;
     private previousTime : number = 0;
     private delta : number = 0;
+    public score : number = 0;
     currentState = GameState.title;
-
+    public get gameOver() { return this.currentState!=GameState.game; }
     constructor()
     {
         Game.INTERVAL = 1000/Config.fps;
@@ -55,7 +56,7 @@ class Game
     transitionToTitle()
     {
         let ty = (Config.title.length == 1)?.4:.35;
-        new TextActor(Config.title).setPosition(new Vector(.5, ty))
+        new TextActor(Config.title).setPosition(new Vector(.5, ty)).setDurationForever()
         /*
 		if Config.title.length > 1
 			new Text(Config.title[1]).xy(.5, .45).sc(3).df
@@ -72,6 +73,7 @@ Mouse.setPressedDisabledCount 10
     transitionToGame()
     {
         this.currentState = GameState.game;
+        this.score = 0;
         Actor.clear();
         this.onBeginGame();
     }
@@ -117,6 +119,7 @@ Mouse.setPressedDisabledCount 10
         {
             this.updateTitle();
         }
+        Game.display.drawText(`SCORE: ${this.score}`, 1,0,1);
         this.postUpdateFrame();
     }
     postUpdateFrame()

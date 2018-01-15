@@ -11,7 +11,7 @@ class ParticleSystem
     position : Vector = new Vector(0,0);
     angleWidth : number = 360;
     speed : number = 0.01;
-    color : Color = Color.White;
+    color : Color = Color.white;
     size : number = 0.02;
     duration : number = 30;
     constructor()

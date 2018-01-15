@@ -1,8 +1,6 @@
-[ ] keyboard support
+[ ] actor ordering
 [ ] canvas scaling
 [ ] canvas center
-[ ] add circle to drawing class (simulates circle with squares)
-[ ] add rotate to drawing class
 [ ] get actor scaling working
 
 larger issues

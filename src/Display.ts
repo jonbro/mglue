@@ -39,7 +39,7 @@ export class Display
     {
         this.clear();
     }
-    fillRect(x : number,y : number,width : number,height : number, color : Color = Color.White)
+    fillRect(x : number,y : number,width : number,height : number, color : Color = Color.white)
     {
         this.context.fillStyle = color.toString();
         this.context.fillRect(
@@ -49,12 +49,12 @@ export class Display
             height * Display.size.y
         );
     }
-    fillRectDirect(x, y, width, height, color = Color.White)
+    fillRectDirect(x, y, width, height, color = Color.white)
     {
         this.context.fillStyle = color.toString();
         this.context.fillRect(x, y, width, height);
     }
-    drawText(text : string, x : number, y : number, alignX = -1, alignY = -1, color = Color.White, scale = 1)
+    drawText(text : string, x : number, y : number, alignX = -1, alignY = -1, color = Color.white, scale = 1)
     {
         this.textDrawer.setSize(Display.size);
         this.textDrawer.drawString(text, x, y, alignX, alignY, color, scale);

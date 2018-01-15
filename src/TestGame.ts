@@ -15,7 +15,7 @@ class Enemy extends glue.Actor
     begin()
     {
         this.position.set(0.2, 0.2);
-        this.drawing.setColor(glue.Color.Red)
+        this.drawing.setColor(glue.Color.red)
             .addRect(0.1, 0.1, 0,0);
     }
 }
@@ -25,7 +25,7 @@ class Player extends glue.Actor
     {
         this.position.set(0.5,0.5);
         this.drawing
-            .setColor(glue.Color.Blue)
+            .setColor(glue.Color.blue)
             .addRect(0.01, 0.05, 0, -0.005)
             .addRect(0.025, 0.01, 0.015, 0)
             .mirrorX()
@@ -42,7 +42,7 @@ class Player extends glue.Actor
             let ps = new glue.ParticleSystem();
             ps.position.set(this.position.x, this.position.y);
             ps.count = 10;
-            ps.color = glue.Color.Blue;
+            ps.color = glue.Color.blue;
             g.endGame();
         });
     }

@@ -110,10 +110,11 @@ class TextDrawer
     }
     drawDots(li, x, y, color, size)
     {
-        this.dotPatterns[li].forEach(p => {
+        for (let i = 0; i < this.dotPatterns[li].length; i++) {
+            const p = this.dotPatterns[li][i];
             Game.display.fillRectDirect(x + p.x * size, y + p.y * size,
-                size, size, color);
-        });
+                size, size, color);            
+        }
     }
     setSize(size : Vector)
     {
@@ -172,7 +173,7 @@ class Drawing
     scale : Vector = new Vector(1,1); 
     private rects : DrawingRect[] = [];
     private color : Color;
-    private hasCollision : boolean = true;
+    hasCollision : boolean = true;
     private lastAdded : any;
     setColor(color : Color)
     : Drawing

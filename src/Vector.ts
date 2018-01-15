@@ -7,7 +7,7 @@ class Vector
         this.y = y;
     }
     static distance(a : Vector, b : Vector)
-    : Number
+    : number
     {
         return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     }

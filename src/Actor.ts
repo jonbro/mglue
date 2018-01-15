@@ -70,7 +70,7 @@ class Actor
             // this.initialize()
         }
         group.members.push(this);
-        this.begin(args)
+        this.begin(...args)
         // after begin, force an update of the drawing state, so we don't get bad collisions on the first frame
         this.drawing.position.set(this.position.x, this.position.y);
         this.drawing.updateState();
@@ -97,6 +97,12 @@ class Actor
         this.position.set(p.x, p.y);
         return this;
     }
+    setVelocity(velocity : Vector)
+    : Actor
+    {
+        this.velocity.set(velocity.x, velocity.y);
+        return this;
+    }
     lateUpdate()
     {
         this.position.add(this.velocity);
@@ -105,15 +111,22 @@ class Actor
         this.drawing.draw();
         this.age++;
     }
-    checkOverlap(targetClass, handler)
+    checkOverlap(targetClass, handler?:Function)
+    : boolean
     {
+        let res = false;
         let checkActors : Actor[] = Actor.getGroup(targetClass);
         checkActors.forEach(a => {
             if(a.drawing.isOverlapping(this.drawing))
             {
-                handler(a);
+                res = true;
+                if(handler)
+                {
+                    handler(a);
+                }
             }
         });
+        return res;
     }
     static update()
     {
@@ -151,13 +164,32 @@ class TextActor extends Actor
         this.displayString = s;
     }
     setDurationForever()
+    : TextActor
     {
         this.duration = 999999;
+        return this;
     }
     update()
     {
-        Game.display.drawText(this.displayString, this.position.x, this.position.y, 0, -1, Color.White, 1);
+        Game.display.drawText(this.displayString, this.position.x, this.position.y, 0, -1, Color.white, 1);
+        this.position.add(this.velocity);
+        if(this.age>this.duration)
+        {
+            this.destroy();
+        }
     }   
+    setDuration(duration:number)
+    : TextActor
+    {
+        this.duration = duration;
+        return this;
+    }
+    setVelocity(velocity : Vector)
+    : TextActor
+    {
+        super.setVelocity(velocity);
+        return this;
+    }
     setPosition(p : Vector)
     : TextActor
     {
