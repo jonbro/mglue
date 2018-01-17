@@ -51,7 +51,6 @@ window.onload = function()
 {
     g = new TestGame();
     let s = new Tone.MonoSynth();
-    
     s.toMaster();
     s.triggerAttackRelease('C4', '0.1');
 }

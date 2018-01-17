@@ -1,7 +1,52 @@
+[ ] levels (you can only pick up x many things before escalation)
 [ ] actor ordering
-[ ] canvas scaling
-[ ] canvas center
 [ ] get actor scaling working
 
 larger issues
 [ ] get the tonejs bindings up to r11 version of tonejs
+
+
+
+var bd = new Tone.MembraneSynth();
+bd.toMaster();
+let triggerBD = function()
+{
+    bd.triggerAttackRelease('C2', '0.1');
+}
+var hh = new Tone.MetalSynth();
+hh.volume.value = -20;
+hh.toMaster();
+let triggerHH = function()
+{
+    hh.triggerAttackRelease('0.1', '0.01');
+}
+var sd = new Tone.MembraneSynth();
+sd.volume.value = -10;
+sd.toMaster();
+let triggerSD = function()
+{
+    sd.triggerAttackRelease('C4', '0.01');
+}
+
+
+    let ft = Random.rangeInt(0,2)
+    while(ft<16)
+    {
+        Tone.Transport.schedule(triggerHH, `0:0:${ft}`)
+        ft+=Random.rangeInt(1, 3);
+    }
+    ft = Random.rangeInt(0,2)
+    while(ft<16)
+    {
+        Tone.Transport.schedule(triggerBD, `0:0:${ft}`)
+        ft+=Random.rangeInt(1, 3);
+    }
+    ft = Random.rangeInt(0,2)
+    while(ft<16)
+    {
+        Tone.Transport.schedule(triggerSD, `0:0:${ft}`)
+        ft+=Random.rangeInt(3, 6);
+    }
+    Tone.Transport.loopEnd = '1m'
+    Tone.Transport.loop = true;
+    Tone.Transport.start('+0.1');

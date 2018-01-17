@@ -1,7 +1,7 @@
 import * as glue from "./Mglue"
-import * as Tone from "./Tone"
 import { Keyboard } from "./Keyboard";
 import { Vector } from "./Vector";
+import { Random } from "./Random";
 
 var g : WormDriveGame;
 class WormDriveGame extends glue.Game
@@ -65,10 +65,10 @@ class Player extends glue.Actor
     {
         this.position.set(0.5,0.5);
         this.drawing
-            .setColor(glue.Color.blue)
-            .addRect(0.02, 0.02, 0.02)
+            .setColor(glue.Color.lightblue)
+            .addRect(0.02, 0.02, 0.01)
             .addArc(60, 6)
-            .setColor(glue.Color.green)
+            .setColor(glue.Color.darkgray)
             .addRect(0.01, 0.01, 0.015, 0)
             .mirrorX()
     }
@@ -139,9 +139,17 @@ class Player extends glue.Actor
         {
             this.rotation += this.turnSpeed;
         }
+        let v = new Vector(0,0).addDirection(this.rotation, 1);
+        if(this.position.x > 1 || this.position.x < 0)
+        {
+            v.x *= -1;
+        }
+        if(this.position.y > 1 || this.position.y < 0)
+        {
+            v.y *= -1;
+        }
+        this.rotation = v.rotation();
         this.position.addDirection(this.rotation, this.moveSpeed);
-        this.position.x = this.position.x.loopRange();
-        this.position.y = this.position.y.loopRange();
         // check to see if we are eating an apple
         if(this.checkOverlap(Apple, (a)=>{
             a.chooseNewPosition();

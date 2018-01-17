@@ -43,10 +43,16 @@ class Game
     private previousTime : number = 0;
     private delta : number = 0;
     public score : number = 0;
+    public lastScore : number = -1;
+    public highScore : number = -1;
     currentState = GameState.title;
     public get gameOver() { return this.currentState!=GameState.game; }
     constructor()
     {
+        if(window.localStorage.getItem('wormdrive1hs'))
+        {
+            this.highScore = Number(window.localStorage.getItem('wormdrive1hs'));
+        }
         Game.INTERVAL = 1000/Config.fps;
         Game.display = new Display();
         Mouse.initialize();
@@ -57,15 +63,31 @@ class Game
     {
         let ty = (Config.title.length == 1)?.4:.35;
         new TextActor(Config.title).setPosition(new Vector(.5, ty)).setDurationForever()
-        /*
-		if Config.title.length > 1
-			new Text(Config.title[1]).xy(.5, .45).sc(3).df
-		new Text('[ CLICK / TOUCH ] TO START').xy(.5, .6).df
-Mouse.setPressedDisabledCount 10
-*/
+        new TextActor('[ CLICK / TOUCH ] TO START').setPosition(new Vector(.5, .6)).setDurationForever()
+        if(this.lastScore >= 0)
+        {        
+            new TextActor(`LAST SCORE: ${this.lastScore}`).setPosition(new Vector(.5, .7)).setDurationForever()
+        }
+        if(this.highScore >= 0)
+        {
+            if(this.lastScore != this.highScore)
+            {
+                new TextActor(`HIGH SCORE: ${this.highScore}`).setPosition(new Vector(.5, .8)).setDurationForever()
+            }
+            else
+            {
+                new TextActor(`NEW HIGH SCORE!!!`).setPosition(new Vector(.5, .8)).setDurationForever()    
+            }
+        }
     }
     endGame()
     {
+        this.lastScore = this.score;
+        if(this.lastScore > 0 && this.lastScore > this.highScore)
+        {
+            this.highScore = this.lastScore;
+            window.localStorage.setItem('wormdrive1hs', this.highScore.toString());
+        }
         this.transitionToTitle();
         this.currentState = GameState.title;
         this.onEndGame();

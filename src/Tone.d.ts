@@ -13,6 +13,7 @@ export as namespace Tone;
 export = Tone;
 interface Tone {
     new(inputs?: number, outputs?: number): Tone;
+    Transport: Transport;
     context: AudioContext;
     input: GainNode;
     output: GainNode;
@@ -1083,9 +1084,8 @@ declare module Tone {
 
     interface Time{}
 
-    var Transport:  {
-        new(): Tone.Transport;
-    };
+    interface Transport  {
+    }
 
     interface Transport extends Tone {
         bpm: Tone.Signal;
@@ -1116,6 +1116,7 @@ declare module Tone {
         syncSource(source: Tone.Source, delay: Tone.Time): Tone.Transport;
         unsyncSignal(signal: Tone.Signal): Tone.Transport;
         unsyncSource(source: Tone.Source): Tone.Transport;
+        schedule(callback: Function, time: Tone.Time): Number;
     }
 
     interface TransportState {}

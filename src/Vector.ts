@@ -16,6 +16,11 @@ class Vector
     {
         return Math.atan2(other.x - this.x, -(other.y-this.y)) * 180.0 / Math.PI;
     }
+    rotation()
+    : number
+    {
+        return Math.atan2(this.x, -this.y) * 180 / Math.PI;
+    }
     addDirection(degrees : number, amount : number)
     {
         let radians = degrees * Math.PI / 180.0;
