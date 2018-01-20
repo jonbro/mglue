@@ -6,6 +6,7 @@ class ActorGroup
 {
     name : string;
     members : Actor[];
+    displayPriority: number = 1;
     constructor(name : string)
     {
         this.name = name;
@@ -47,6 +48,7 @@ class Actor
     drawing : Drawing;
     isDestroying : boolean = false;
     age : number = 0;
+    group : ActorGroup;
     constructor(...args: any[])
     {
         this.drawing = new Drawing();
@@ -70,6 +72,7 @@ class Actor
             // this.initialize()
         }
         group.members.push(this);
+        this.group = group;
         this.begin(...args)
         // after begin, force an update of the drawing state, so we don't get bad collisions on the first frame
         this.drawing.position.set(this.position.x, this.position.y);
@@ -153,15 +156,38 @@ class Actor
         }
         return [];
     }
+    setDisplayPriority(displayPriority:number)
+    : Actor
+    {
+        this.group.displayPriority = displayPriority;
+        Actor.sortGroups();
+        return this;
+    }
+    static sortGroups()
+    {
+        Actor.groups.sort((a, b)=>{
+            return a.displayPriority - b.displayPriority;
+        });
+    }
 }
 class TextActor extends Actor
 {
-    duration : Number = 1;
+    duration : number;
+    xAlign : number;
     displayString : string;
+    color : Color;
     constructor(s : string)
     {
         super();
         this.displayString = s;
+    }
+    begin()
+    {
+        this.setDisplayPriority(2);
+        this.duration = 1;
+        this.scale.set(1,1);
+        this.xAlign = 0;
+        this.color = Color.white;
     }
     setDurationForever()
     : TextActor
@@ -171,7 +197,7 @@ class TextActor extends Actor
     }
     update()
     {
-        Game.display.drawText(this.displayString, this.position.x, this.position.y, 0, -1, Color.white, 1);
+        Game.display.drawText(this.displayString, this.position.x, this.position.y, 0, this.xAlign, this.color, this.scale.x);
         this.position.add(this.velocity);
         if(this.age>this.duration)
         {

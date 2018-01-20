@@ -1,8 +1,6 @@
 {
   "requires": true,
   "dependencies": {
-    "@types/tone": "git+https://github.com/Tonejs/TypeScript.git",
-    "tone": "^0.11.11",
     "typescript": "^2.6.2"
   },
   "devDependencies": {
@@ -10,3 +8,7 @@
     "webpack-livereload-plugin": "^1.0.0"
   }
 }
+/*
+"@types/tone": "git+https://github.com/Tonejs/TypeScript.git",
+"tone": "^0.11.11",
+*/

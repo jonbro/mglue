@@ -1,10 +1,19 @@
 class Vector
 {
     constructor(public x : number, public y : number) {}
-    set(x : number, y : number)
+    set(x: number, y:number): void;
+    set(v: Vector): void;
+    set(x : number | Vector, y? : number)
+    : void
     {
-        this.x = x;
-        this.y = y;
+        if(x instanceof Vector)
+        {
+            this.x = (<Vector>x).x;
+            this.y =  (<Vector>x).y;
+        }else{
+            this.x = <number>x;
+            this.y = <number>y;
+        }
     }
     static distance(a : Vector, b : Vector)
     : number
@@ -33,6 +42,13 @@ class Vector
     {
         this.x += other.x;
         this.y += other.y;
+        return this;
+    }
+    divide(scalar : number)
+    : Vector
+    {
+        this.x /= scalar;
+        this.y /= scalar;
         return this;
     }
     rotate(angleDegrees : number)

@@ -299,7 +299,18 @@ class Drawing
             rect.updateState(this);
         });    
     }
-
+    setPosition(v:Vector)
+    : Drawing
+    {
+        this.position.set(v);
+        return this;
+    }
+    setRotation(r:number)
+    : Drawing
+    {
+        this.rotation = r;
+        return this;
+    }
     draw()
     {
         this.rects.forEach(rect => {

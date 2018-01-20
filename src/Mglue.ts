@@ -8,4 +8,5 @@ export { Vector } from "./Vector";
 export { ParticleSystem } from "./ParticleSystem"
 export { Keyboard } from "./Keyboard"
 export { Random } from "./Random"
+export { Drawing } from "./Drawing"
 import "./Extensions";

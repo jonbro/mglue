@@ -1,37 +1,46 @@
-import * as glue from "./Mglue"
-import { Keyboard } from "./Keyboard";
-import { Vector } from "./Vector";
-import { Random } from "./Random";
-
+import { Drawing, ParticleSystem, TextActor, Config, Color, Keyboard, Vector, Random, Actor, Game } from "./Mglue";
 var g : WormDriveGame;
-class WormDriveGame extends glue.Game
+class WormDriveGame extends Game
 {
     onBeginGame()
     {
         let p = new Player();
         let a = new Apple();
+        let i = new InstructionText("OVERLAP SAFE");
     }
 }
-class Apple extends glue.Actor
+class InstructionText extends TextActor
+{
+    begin()
+    {
+        this.setDisplayPriority(-1);
+        this.setDurationForever();
+        this.xAlign = 0;
+        this.setPosition(new Vector(0.5, 0.5));
+        this.scale.x = 2;
+        this.color = Color.darkgreen;
+    }
+}
+class Apple extends Actor
 {
     begin()
     {
         this.position.set(0.25, 0.25)
         this.drawing
-            .setColor(glue.Color.red)
+            .setColor(Color.red)
             .addRect(0.02, 0.02, 0.02)
             .addArc(60,6)
     }
     chooseNewPosition()
     {
-        this.position.set(glue.Random.range(0.1,0.9), glue.Random.range(0.1,0.9))
+        this.position.set(Random.range(0.1,0.9), Random.range(0.1,0.9))
     }
 }
-class BodySegment extends glue.Actor
+class BodySegment extends Actor
 {
     begin(dangerSeg : boolean)
     {
-        let color = dangerSeg?glue.Color.lightgreen:glue.Color.darkgreen;
+        let color = dangerSeg?Color.lightgreen:Color.darkgreen;
         this.drawing.hasCollision = dangerSeg;
         this.drawing
             .setColor(color)
@@ -39,7 +48,7 @@ class BodySegment extends glue.Actor
     }
 }
 // line intersection
-function turn(p1:glue.Vector, p2:glue.Vector, p3:glue.Vector):number
+function turn(p1:Vector, p2:Vector, p3:Vector):number
 {
     let epsilon = Math.pow(2, -52);
     let a = p1.x; let b = p1.y; 
@@ -49,28 +58,35 @@ function turn(p1:glue.Vector, p2:glue.Vector, p3:glue.Vector):number
     let B = (d - b) * (e - a);
     return (A > B + epsilon) ? 1 : (A + epsilon < B) ? -1 : 0;   
 }
-function lineIntersecting(p1:glue.Vector, p2:glue.Vector, p3:glue.Vector, p4:glue.Vector)
+function lineIntersecting(p1:Vector, p2:Vector, p3:Vector, p4:Vector)
 :boolean
 {
     return (turn(p1, p3, p4) != turn(p2, p3, p4)) && (turn(p1, p2, p3) != turn(p1, p2, p4));
 }
-class Player extends glue.Actor
+class Player extends Actor
 {
     turnSpeed:number = 5;
     bodySegments:BodySegment[] = []
     spawnRemaining:number = 0;
     moveSpeed:number = 0.005;
-    spawnPosition : glue.Vector;
+    spawnPosition : Vector;
+    overlapDrawing : Drawing;
+    intersections: Vector[] = [];
     begin()
     {
         this.position.set(0.5,0.5);
         this.drawing
-            .setColor(glue.Color.lightblue)
+            .setColor(Color.lightblue)
             .addRect(0.02, 0.02, 0.01)
             .addArc(60, 6)
-            .setColor(glue.Color.darkgray)
+            .setColor(Color.darkgray)
             .addRect(0.01, 0.01, 0.015, 0)
             .mirrorX()
+        this.overlapDrawing = new Drawing();
+        this.overlapDrawing
+            .setColor(Color.red)
+            .addRect(0.01, 0.01, 0.04)
+            .addArc(20, 18)
     }
     private getSpawnPosition()
     {
@@ -82,7 +98,6 @@ class Player extends glue.Actor
     }
     update()
     {
-        
         if(this.spawnRemaining > 0 && this.age % 20 ==0)
         {
             this.spawnRemaining--;
@@ -101,11 +116,12 @@ class Player extends glue.Actor
                 moveTarget = this.bodySegments[i-1].position;
             }
             let direction = cSeg.position.directionTo(moveTarget);
-            let distance = glue.Vector.distance(cSeg.position, moveTarget);
+            let distance = Vector.distance(cSeg.position, moveTarget);
             cSeg.position.addDirection(direction, distance*0.05);
         }
         // see how many line segments overlap
         let overlapCount = 0;
+        this.intersections = [];
         for (let i = 0; i < this.bodySegments.length-1; i++) {
             const a = this.bodySegments[i].position;
             const b = this.bodySegments[i+1].position;
@@ -120,22 +136,21 @@ class Player extends glue.Actor
                 if(lineIntersecting(a,b,c,d))
                 {
                     overlapCount++;
-                    let ps = new glue.ParticleSystem();
-                    let pp = new Vector(d.x, d.y);
-                    pp.add(c).add(b).add(a);
-                    ps.position.set(pp.x/4,pp.y/4);
-                    ps.count = 1;
-                    ps.duration = 2;
-                    ps.size = 0.01;
-                    ps.color = glue.Color.darkred;        
+                     
+                    let intersection = new Vector(a.x, a.y).add(b).add(c).add(d).divide(4);
+                    this.intersections.push(intersection);
+                    this.overlapDrawing
+                        .setRotation(this.age)
+                        .setPosition(intersection)
+                        .draw();
                 }
             }
         }
-        if(glue.Keyboard.keyDown[glue.Keyboard.LEFT])
+        if(Keyboard.keyDown[Keyboard.LEFT])
         {
             this.rotation -= this.turnSpeed;
         }
-        if(glue.Keyboard.keyDown[glue.Keyboard.RIGHT])
+        if(Keyboard.keyDown[Keyboard.RIGHT])
         {
             this.rotation += this.turnSpeed;
         }
@@ -156,25 +171,28 @@ class Player extends glue.Actor
         }))
         {
             // add score
-            new glue.TextActor(`+${overlapCount}`).setPosition(this.position).setDuration(30).setVelocity(new Vector(0,-0.001));
-            g.score+=overlapCount;
+            this.intersections.forEach(intersection => {
+                new TextActor(`+1`).setPosition(intersection).setDuration(30).setVelocity(new Vector(0,-0.001));
+                g.score+=1;
+            });
             // start spawning body segments
             this.spawnRemaining = 8;
-            this.spawnPosition = new glue.Vector(this.getSpawnPosition().x, this.getSpawnPosition().y)
+            this.spawnPosition = new Vector(this.getSpawnPosition().x, this.getSpawnPosition().y)
         }
         if(!g.gameOver && this.checkOverlap(BodySegment))
         {
             this.destroy();
-            let ps = new glue.ParticleSystem();
+            let ps = new ParticleSystem();
             ps.position.set(this.position.x, this.position.y);
             ps.count = 10;
-            ps.color = glue.Color.blue;
+            ps.color = Color.blue;
             g.endGame();
         }
     }
 }
 window.onload = function()
 {
-    glue.Config.title = "WORM DRIVE";
+    console.log("window loading");
+    Config.title = "WORM DRIVE";
     g = new WormDriveGame();
 }

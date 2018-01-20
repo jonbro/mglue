@@ -8,5 +8,6 @@ class Config
     static soundVolume : number = 0.02;
     static debugMode : boolean = true;
     static title : string = "GAME TITLE";
+    static saveName : string = "Wormdrive2hs"
 }
 export { Config }

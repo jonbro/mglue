@@ -49,9 +49,9 @@ class Game
     public get gameOver() { return this.currentState!=GameState.game; }
     constructor()
     {
-        if(window.localStorage.getItem('wormdrive1hs'))
+        if(window.localStorage.getItem(Config.saveName))
         {
-            this.highScore = Number(window.localStorage.getItem('wormdrive1hs'));
+            this.highScore = Number(window.localStorage.getItem(Config.saveName));
         }
         Game.INTERVAL = 1000/Config.fps;
         Game.display = new Display();
@@ -86,7 +86,7 @@ class Game
         if(this.lastScore > 0 && this.lastScore > this.highScore)
         {
             this.highScore = this.lastScore;
-            window.localStorage.setItem('wormdrive1hs', this.highScore.toString());
+            window.localStorage.setItem(Config.saveName, this.highScore.toString());
         }
         this.transitionToTitle();
         this.currentState = GameState.title;

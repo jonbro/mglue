@@ -1,9 +1,10 @@
 [ ] levels (you can only pick up x many things before escalation)
 [ ] actor ordering
 [ ] get actor scaling working
-
+[ ] stop getting stuck in walls
 larger issues
 [ ] get the tonejs bindings up to r11 version of tonejs
+[ ] try to get monaco editor working with this
 
 
 
