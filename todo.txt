@@ -1,5 +1,12 @@
+[x] arrow keys to restart
+[ ] highscore table
+
+probably not gonna get done
+---------------------------
+[ ] simple sound effects
+[ ] simple music
 [ ] levels (you can only pick up x many things before escalation)
-[ ] actor ordering
+[x] actor ordering
 [ ] get actor scaling working
 [ ] stop getting stuck in walls
 larger issues

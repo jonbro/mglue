@@ -2,7 +2,7 @@ const path = require('path');
 var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
-  entry: './src/WormDrive.ts',
+  entry: './client_src/WormDrive.ts',
   devtool: 'inline-source-map',
   module: {
     rules: [
@@ -20,7 +20,7 @@ module.exports = {
     new LiveReloadPlugin()
   ],
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: 'client.js',
+    path: path.resolve(__dirname, 'public')
   }
 };

@@ -5,6 +5,7 @@ import { Config } from "./Config";
 import { Mouse } from "./Mouse";
 import { Vector } from "./Vector";
 import { Keyboard } from "./Keyboard"
+import { Leaderboard } from "./Leaderboard";
 import "./Extensions";
 
 var requestAnimationFrameWrapper =
@@ -46,6 +47,7 @@ class Game
     public score : number = 0;
     public lastScore : number = -1;
     public highScore : number = -1;
+    public ticks : number = 0;
     currentState = GameState.title;
     public get gameOver() { return this.currentState!=GameState.game; }
     constructor()
@@ -62,22 +64,23 @@ class Game
     }
     transitionToTitle()
     {
-        let ty = (Config.title.length == 1)?.4:.35;
-        new TextActor(Config.title).setPosition(new Vector(.5, ty)).setDurationForever()
-        new TextActor('[ SPACE ] TO START').setPosition(new Vector(.5, .6)).setDurationForever()
+        let ty = (Config.title.length == 1)?.2:.15;
+        new TextActor(Config.title).setPosition(new Vector(.5, ty)).setDurationForever().scale = new Vector(2,2);
+        new TextActor('[ SPACE ] TO START').setPosition(new Vector(.5, .7)).setDurationForever()
         if(this.lastScore >= 0)
         {        
-            new TextActor(`LAST SCORE: ${this.lastScore}`).setPosition(new Vector(.5, .7)).setDurationForever()
+            new TextActor(`LAST SCORE: ${this.lastScore}`).setPosition(new Vector(.5, .8)).setDurationForever()
+            Leaderboard.set(this.score);            
         }
         if(this.highScore >= 0)
         {
             if(this.lastScore != this.highScore)
             {
-                new TextActor(`HIGH SCORE: ${this.highScore}`).setPosition(new Vector(.5, .8)).setDurationForever()
+                new TextActor(`YOUR HIGH SCORE: ${this.highScore}`).setPosition(new Vector(.5, .85)).setDurationForever();
             }
             else
             {
-                new TextActor(`NEW HIGH SCORE!!!`).setPosition(new Vector(.5, .8)).setDurationForever()    
+                new TextActor(`NEW HIGH SCORE!!!`).setPosition(new Vector(.5, .85)).setDurationForever()    
             }
         }
     }
@@ -103,6 +106,7 @@ class Game
     // override
     onBeginGame(){}
     onEndGame(){}
+    update() {}
     updateTitle()
     {
         if(Keyboard.keyDown[Keyboard.SPACE])
@@ -137,6 +141,8 @@ class Game
             return;
         }
         Game.display.preUpdate();
+        this.ticks++;
+        this.update();
         Actor.update();
         if(this.currentState == GameState.title)
         {

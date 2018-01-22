@@ -1,12 +1,83 @@
 import { Drawing, ParticleSystem, TextActor, Config, Color, Keyboard, Vector, Random, Actor, Game } from "./Mglue";
+import { Leaderboard } from "./Leaderboard";
 var g : WormDriveGame;
 class WormDriveGame extends Game
 {
+    rankStrings : string[] = ['ST', 'ND', 'RD'];
+    leaderboardText : TextActor = new TextActor("");
     onBeginGame()
     {
         let p = new Player();
         let a = new Apple();
         let i = new InstructionText("OVERLAP SAFE");
+    }
+    updateTitle()
+    {
+        if(Keyboard.keyDown[Keyboard.SPACE])
+        {
+            this.transitionToGame();
+        }
+        let leaderboardType =Math.floor(this.ticks/180)%4;
+        if(this.ticks%180 == 0)
+        {
+            switch(leaderboardType)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Leaderboard.get(true);
+                    break;
+                case 2:
+                    Leaderboard.get(false, true)
+                    break;
+                case 3:
+                    Leaderboard.get();
+                    break;
+            }
+            Leaderboard.get();
+        }
+        if(Leaderboard.scores == null || leaderboardType == 0)
+        {
+            return;
+        }
+        let count = 0;
+        let startPosition = 0.2;
+        this.leaderboardText.color = Color.white;
+        var leaderboardTypes = ['LAST', 'BEST', 'TOP'];
+
+        this.leaderboardText.displayString = leaderboardTypes[leaderboardType-1];
+        this.leaderboardText.setPosition(new Vector(0.5, startPosition));
+        this.leaderboardText.update();
+        startPosition += 0.035;
+        Leaderboard.scores.forEach(score => {
+            if(Leaderboard.playerId == score.playerId)
+            {
+                this.leaderboardText.color = Color.lightgreen;
+                this.leaderboardText.xAlign = 1;
+                this.leaderboardText.setPosition(new Vector(0.2,count*0.03+startPosition));
+                this.leaderboardText.displayString = "YOU";
+                this.leaderboardText.update();
+                }
+            else
+            {
+                this.leaderboardText.color = Color.white;
+            }
+
+            this.leaderboardText.xAlign = 1;
+            this.leaderboardText.setPosition(new Vector(0.4,count*0.03+startPosition));
+            if(score.rank != null)
+            {
+                let rs = "" + (score.rank + 1) + ((score.rank < 3) ? this.rankStrings[score.rank] : 'TH');
+                this.leaderboardText.displayString = rs;
+                this.leaderboardText.update();
+            }
+
+            this.leaderboardText.xAlign = -1;
+            this.leaderboardText.setPosition(new Vector(0.6,count*0.03+startPosition));
+            this.leaderboardText.displayString = score.score.toString();
+            this.leaderboardText.update();
+            count++;
+        });
     }
 }
 class InstructionText extends TextActor
@@ -240,7 +311,7 @@ class Player extends Actor
 }
 window.onload = function()
 {
-    console.log("window loading");
     Config.title = "WORM DRIVE";
+    Leaderboard.init();
     g = new WormDriveGame();
 }
