@@ -1,5 +1,7 @@
 import { Drawing, ParticleSystem, TextActor, Config, Color, Keyboard, Vector, Random, Actor, Game } from "./Mglue";
+import * as Tone from "tone";
 import { Leaderboard } from "./Leaderboard";
+
 var g : WormDriveGame;
 class WormDriveGame extends Game
 {
@@ -10,6 +12,11 @@ class WormDriveGame extends Game
         let p = new Player();
         let a = new Apple();
         let i = new InstructionText("OVERLAP SAFE");
+        freeverb.wet.rampTo(0, 3);
+        Tone.Transport.scheduleOnce(function(time){
+            console.log("should be starting second track")
+            vol.volume.rampTo(0, 3);
+        }, "@1m");
     }
     updateTitle()
     {
@@ -78,6 +85,16 @@ class WormDriveGame extends Game
             this.leaderboardText.update();
             count++;
         });
+    }
+    transitionToTitle()
+    {
+        super.transitionToTitle();
+        freeverb.wet.rampTo(1, 3);
+        Tone.Transport.scheduleOnce(function(time){
+            console.log("should be cancelling the second track")
+            vol.volume.cancelScheduledValues("+0")
+            vol.volume.rampTo(-Infinity, 3);
+        }, "@1m");
     }
 }
 class InstructionText extends TextActor
@@ -194,7 +211,9 @@ class Player extends Actor
     overlapDrawing : Drawing;
     intersections: Vector[] = [];
     priorPositions: PositionBuffer = new PositionBuffer();
-    segmentLength: number = 10;
+    segmentLength: number = 8;
+    onDanger:boolean = false;
+    typeRemain:number = Random.rangeInt(6, 9);
     begin()
     {
         this.position.set(0.5,0.5);
@@ -225,7 +244,13 @@ class Player extends Actor
         if(this.spawnRemaining > 0 && this.age % this.segmentLength ==0)
         {
             this.spawnRemaining--;
-            let dangerSeg :boolean = Math.floor(this.bodySegments.length/8)%2==1;
+            let dangerSeg :boolean = this.onDanger;
+            this.typeRemain--;
+            if(this.typeRemain<0)
+            {
+                this.onDanger = !this.onDanger;
+                this.typeRemain = Random.rangeInt(6,9);
+            }
             let newSeg = new BodySegment(dangerSeg);
             this.bodySegments.push(newSeg);
             this.priorPositions.growBuffer(this.segmentLength, this.spawnPosition);
@@ -289,13 +314,14 @@ class Player extends Actor
             a.chooseNewPosition();
         }))
         {
+            [apple1,apple2,apple3,apple4][Random.rangeInt(0,3)].start();            
             // add score
             this.intersections.forEach(intersection => {
                 new TextActor(`+1`).setPosition(intersection).setDuration(30).setVelocity(new Vector(0,-0.001));
                 g.score+=1;
             });
             // start spawning body segments
-            this.spawnRemaining = 8;
+            this.spawnRemaining = this.segmentLength;
             this.spawnPosition = new Vector(this.getSpawnPosition().x, this.getSpawnPosition().y);
         }
         if(!g.gameOver && this.checkOverlap(BodySegment))
@@ -306,12 +332,50 @@ class Player extends Actor
             ps.count = 10;
             ps.color = Color.blue;
             g.endGame();
+            [dead1, dead2][Random.rangeInt(0,1)].start();
         }
     }
 }
+Tone.Transport.bpm.value = 86;
+var freeverb = new Tone.Freeverb(0.7, 'C4').toMaster();
+var track1 = new Tone.Player({
+    url : "[https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Ftrack_1.mp3?1516678343305|https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Ftrack_1.ogg?1516678343253]",
+    loop : true
+}).connect(freeverb).sync().start(0);
+var vol = new Tone.Volume(-100);
+var track2 = new Tone.Player({
+    url : "[https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Ftrack_2.mp3?1516678343539|https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Ftrack_2.ogg?1516678342753]",
+    loop : true
+}).chain(vol, Tone.Master).sync().start(0);
+var dead1 = new Tone.Player({
+    url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fdead1.wav?1516678342035"
+}).connect(Tone.Master).sync();
+var dead2 = new Tone.Player({
+    url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fdead2.wav?1516678342465"
+}).connect(Tone.Master).sync();
+var apple1 = new Tone.Player({
+    url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple1.wav?1516678342084"
+}).connect(Tone.Master).sync();
+var apple2 = new Tone.Player({
+    url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple2.wav?1516678342530"
+}).connect(Tone.Master).sync();
+var apple3 = new Tone.Player({
+    url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple3.wav?1516678342310"
+}).connect(Tone.Master).sync();
+var apple4 = new Tone.Player({
+    url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple4.wav?1516678342139"
+}).connect(Tone.Master).sync();
+Tone.Transport.loop = true;
+Tone.Transport.loopStart = "0m";
+Tone.Transport.loopEnd = "64m";
 window.onload = function()
 {
+    Tone.Buffer.on("load", ()=>{
+        Tone.Transport.start("+0.1");
+    });
     Config.title = "WORM DRIVE";
     Leaderboard.init();
+
+    //Config.isDebuggingMode = true;
     g = new WormDriveGame();
 }

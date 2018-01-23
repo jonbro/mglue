@@ -57,13 +57,6 @@ export class Display
     drawText(text : string, x : number, y : number, alignX = -1, alignY = -1, color = Color.white, scale = 1)
     {
         this.textDrawer.setSize(Display.size);
-        try
-        {
-            this.textDrawer.drawString(text, x, y, alignX, alignY, color, scale);
-        }
-        catch(e)
-        {
-            console.log(e);
-        }
+        this.textDrawer.drawString(text, x, y, alignX, alignY, color, scale);
     }
 }

@@ -3,7 +3,6 @@ var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
   entry: './client_src/WormDrive.ts',
-  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -19,6 +18,9 @@ module.exports = {
   plugins: [
     new LiveReloadPlugin()
   ],
+  externals: {
+    tone: 'Tone'
+  },
   output: {
     filename: 'client.js',
     path: path.resolve(__dirname, 'public')

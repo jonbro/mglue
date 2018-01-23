@@ -9,5 +9,6 @@ class Config
     static debugMode : boolean = true;
     static title : string = "GAME TITLE";
     static saveName : string = "Wormdrive3hs"
+    static isDebuggingMode : boolean = false;
 }
 export { Config }

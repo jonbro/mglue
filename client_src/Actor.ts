@@ -49,6 +49,7 @@ class Actor
     isDestroying : boolean = false;
     age : number = 0;
     group : ActorGroup;
+    static totalCount : number = 0;
     constructor(...args: any[])
     {
         this.drawing = new Drawing();
@@ -133,7 +134,9 @@ class Actor
     }
     static update()
     {
+        Actor.totalCount = 0;
         Actor.groups.forEach(group => {
+            Actor.totalCount += group.members.length;
             group.update();
         });
     }
