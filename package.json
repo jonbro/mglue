@@ -7,7 +7,7 @@
     "start": "node server.js",
     "build_client": "webpack --env.build",
     "build_server": "tsc -p ./tsconfig_server.json",
-    "watch_client": "webpack-dev-server --inline",
+    "watch_client": "webpack-dev-server --inline --content-base public/",
     "watch_server": "nodemon --watch ./src/server --exec ts-node src/server/server.ts"
   },
   "author": "Jonathan Brodsky",

@@ -203,6 +203,8 @@ class PositionBuffer
 }
 class Player extends Actor
 {
+    gapSizes:number[] = [8,7,5,3,2];
+    currentGap:number = 4;
     turnSpeed:number = 4;
     bodySegments:BodySegment[] = []
     spawnRemaining:number = 0;
@@ -212,8 +214,8 @@ class Player extends Actor
     intersections: Vector[] = [];
     priorPositions: PositionBuffer = new PositionBuffer();
     segmentLength: number = 8;
-    onDanger:boolean = false;
-    typeRemain:number = Random.rangeInt(6, 9);
+    onDanger:boolean = true;
+    typeRemain:number = 0;
     begin()
     {
         this.position.set(0.5,0.5);
@@ -241,16 +243,17 @@ class Player extends Actor
     update()
     {
         this.priorPositions.addPosition(new Vector(this.position.x, this.position.y));
-        if(this.spawnRemaining > 0 && this.age % this.segmentLength ==0)
+        if((this.spawnRemaining > 0||this.typeRemain > 0) && this.age % this.segmentLength ==0)
         {
-            this.spawnRemaining--;
-            let dangerSeg :boolean = this.onDanger;
-            this.typeRemain--;
-            if(this.typeRemain<0)
+            if(this.typeRemain<=0)
             {
                 this.onDanger = !this.onDanger;
-                this.typeRemain = Random.rangeInt(6,9);
+                this.spawnRemaining--;
+                this.currentGap = (this.currentGap+1)%this.gapSizes.length;
+                this.typeRemain = this.gapSizes[this.currentGap];
             }
+            this.typeRemain--;
+            let dangerSeg :boolean = this.onDanger;
             let newSeg = new BodySegment(dangerSeg);
             this.bodySegments.push(newSeg);
             this.priorPositions.growBuffer(this.segmentLength, this.spawnPosition);
@@ -321,7 +324,7 @@ class Player extends Actor
                 g.score+=1;
             });
             // start spawning body segments
-            this.spawnRemaining = this.segmentLength;
+            this.spawnRemaining++;
             this.spawnPosition = new Vector(this.getSpawnPosition().x, this.getSpawnPosition().y);
         }
         if(!g.gameOver && this.checkOverlap(BodySegment))

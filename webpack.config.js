@@ -1,5 +1,4 @@
 const path = require('path');
-var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
   entry: './client_src/WormDrive.ts',
@@ -15,9 +14,6 @@ module.exports = {
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ]
   },
-  plugins: [
-    new LiveReloadPlugin()
-  ],
   externals: {
     tone: 'Tone'
   },

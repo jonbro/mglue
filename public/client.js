@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -332,8 +332,8 @@ var Config_1 = __webpack_require__(4);
 var Mouse_1 = __webpack_require__(7);
 var Vector_1 = __webpack_require__(0);
 var Keyboard_1 = __webpack_require__(8);
-var Leaderboard_1 = __webpack_require__(15);
-__webpack_require__(9);
+var Leaderboard_1 = __webpack_require__(9);
+__webpack_require__(10);
 var requestAnimationFrameWrapper = window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     function (callback) {
@@ -1101,6 +1101,94 @@ Keyboard.initialize();
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var LZString = __webpack_require__(14);
+var Leaderboard = /** @class */ (function () {
+    function Leaderboard() {
+    }
+    Leaderboard.init = function () {
+        var playerIdStorage = localStorage.getItem(Leaderboard.playerIdKey);
+        if (playerIdStorage == null) {
+            window.fetch('/api/nextPlayerId').
+                then(function (result) { return result.json(); }).
+                then(function (json) {
+                Leaderboard.playerId = json.id;
+                localStorage.setItem(Leaderboard.playerIdKey, String(Leaderboard.playerId));
+            });
+        }
+        else {
+            Leaderboard.playerId = Number(playerIdStorage);
+        }
+    };
+    Leaderboard.get = function (isGettingLast, isGettingBest) {
+        if (isGettingLast === void 0) { isGettingLast = false; }
+        if (isGettingBest === void 0) { isGettingBest = false; }
+        if (Leaderboard.playerId == null) {
+            Leaderboard.scores = null;
+            return;
+        }
+        var uri = '/api/score';
+        if (isGettingLast) {
+            uri += "?score=" + Leaderboard.lastScore + "&count=9";
+        }
+        else if (isGettingBest) {
+            uri += "?playerId=" + Leaderboard.playerId;
+        }
+        window.fetch(uri).
+            then(function (result) { return result.json(); }).
+            then(function (json) {
+            Leaderboard.scores = json;
+            if (isGettingLast) {
+                Leaderboard.scores.push({ score: Leaderboard.lastScore, playerId: Leaderboard.playerId });
+                Leaderboard.scores = Leaderboard.scores.sort(function (a, b) {
+                    if (a.score < b.score) {
+                        return -1;
+                    }
+                    else if (a.score > b.score) {
+                        return 1;
+                    }
+                    return 0;
+                });
+            }
+        });
+    };
+    Leaderboard.set = function (score) {
+        Leaderboard.lastScore = score;
+        window.fetch("/api/key?playerId=" + Leaderboard.playerId).
+            then(function (result) { return result.json(); }).
+            then(function (json) {
+            var key = json.key;
+            var headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            var encDataStr = LZString.compressToEncodedURIComponent(JSON.stringify({
+                key: key,
+                score: {
+                    playerId: Leaderboard.playerId,
+                    score: score
+                }
+            }));
+            window.fetch('/api/score', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    data: encDataStr
+                })
+            });
+        });
+    };
+    Leaderboard.playerIdKey = "worm-drive";
+    Leaderboard.lastScore = 0;
+    return Leaderboard;
+}());
+exports.Leaderboard = Leaderboard;
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports) {
 
 Number.prototype.clamp = function (min, max) {
@@ -1131,7 +1219,7 @@ Number.prototype.mod = function (n) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1156,7 +1244,7 @@ exports.Random = Random;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1172,9 +1260,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Mglue_1 = __webpack_require__(12);
-var Tone = __webpack_require__(14);
-var Leaderboard_1 = __webpack_require__(15);
+var Mglue_1 = __webpack_require__(13);
+var Tone = __webpack_require__(16);
+var Leaderboard_1 = __webpack_require__(9);
 var g;
 var WormDriveGame = /** @class */ (function (_super) {
     __extends(WormDriveGame, _super);
@@ -1373,6 +1461,8 @@ var Player = /** @class */ (function (_super) {
     __extends(Player, _super);
     function Player() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.gapSizes = [8, 7, 5, 3, 2];
+        _this.currentGap = 4;
         _this.turnSpeed = 4;
         _this.bodySegments = [];
         _this.spawnRemaining = 0;
@@ -1380,8 +1470,8 @@ var Player = /** @class */ (function (_super) {
         _this.intersections = [];
         _this.priorPositions = new PositionBuffer();
         _this.segmentLength = 8;
-        _this.onDanger = false;
-        _this.typeRemain = Mglue_1.Random.rangeInt(6, 9);
+        _this.onDanger = true;
+        _this.typeRemain = 0;
         return _this;
     }
     Player.prototype.begin = function () {
@@ -1407,14 +1497,15 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.update = function () {
         this.priorPositions.addPosition(new Mglue_1.Vector(this.position.x, this.position.y));
-        if (this.spawnRemaining > 0 && this.age % this.segmentLength == 0) {
-            this.spawnRemaining--;
-            var dangerSeg = this.onDanger;
-            this.typeRemain--;
-            if (this.typeRemain < 0) {
+        if ((this.spawnRemaining > 0 || this.typeRemain > 0) && this.age % this.segmentLength == 0) {
+            if (this.typeRemain <= 0) {
                 this.onDanger = !this.onDanger;
-                this.typeRemain = Mglue_1.Random.rangeInt(6, 9);
+                this.spawnRemaining--;
+                this.currentGap = (this.currentGap + 1) % this.gapSizes.length;
+                this.typeRemain = this.gapSizes[this.currentGap];
             }
+            this.typeRemain--;
+            var dangerSeg = this.onDanger;
             var newSeg = new BodySegment(dangerSeg);
             this.bodySegments.push(newSeg);
             this.priorPositions.growBuffer(this.segmentLength, this.spawnPosition);
@@ -1475,7 +1566,7 @@ var Player = /** @class */ (function (_super) {
                 g.score += 1;
             });
             // start spawning body segments
-            this.spawnRemaining = this.segmentLength;
+            this.spawnRemaining++;
             this.spawnPosition = new Mglue_1.Vector(this.getSpawnPosition().x, this.getSpawnPosition().y);
         }
         if (!g.gameOver && this.checkOverlap(BodySegment)) {
@@ -1534,7 +1625,7 @@ window.onload = function () {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1555,183 +1646,19 @@ var Mouse_1 = __webpack_require__(7);
 exports.Mouse = Mouse_1.Mouse;
 var Vector_1 = __webpack_require__(0);
 exports.Vector = Vector_1.Vector;
-var ParticleSystem_1 = __webpack_require__(13);
+var ParticleSystem_1 = __webpack_require__(15);
 exports.ParticleSystem = ParticleSystem_1.ParticleSystem;
 var Keyboard_1 = __webpack_require__(8);
 exports.Keyboard = Keyboard_1.Keyboard;
-var Random_1 = __webpack_require__(10);
+var Random_1 = __webpack_require__(11);
 exports.Random = Random_1.Random;
 var Drawing_1 = __webpack_require__(5);
 exports.Drawing = Drawing_1.Drawing;
-__webpack_require__(9);
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Actor_1 = __webpack_require__(6);
-var Game_1 = __webpack_require__(2);
-var Color_1 = __webpack_require__(1);
-var Vector_1 = __webpack_require__(0);
-var Random_1 = __webpack_require__(10);
-var ParticleSystem = /** @class */ (function () {
-    function ParticleSystem() {
-        this.count = 1;
-        this.position = new Vector_1.Vector(0, 0);
-        this.angleWidth = 360;
-        this.speed = 0.01;
-        this.color = Color_1.Color.white;
-        this.size = 0.02;
-        this.duration = 30;
-        var actor = new ParticleActor();
-        actor.particleSystem = this;
-    }
-    return ParticleSystem;
-}());
-exports.ParticleSystem = ParticleSystem;
-var ParticleActor = /** @class */ (function (_super) {
-    __extends(ParticleActor, _super);
-    function ParticleActor() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ParticleActor.prototype.update = function () {
-        if (this.particleSystem) {
-            // if we are generating particles, spawn them and bail
-            this.destroy();
-            var s = this.particleSystem;
-            if (s.count < 1) {
-                return;
-            }
-            for (var i = 0; i < s.count; i++) {
-                var p = new ParticleActor();
-                p.position.set(s.position.x, s.position.y);
-                p.velocity.addDirection(Random_1.Random.range(-s.angleWidth / 2, s.angleWidth / 2), s.speed * Random_1.Random.range(0.5, 1.5));
-                p.color = s.color;
-                p.size = s.size;
-                p.duration = s.duration;
-            }
-            return;
-        }
-        // otherwise just do a draw loop on ourself
-        Game_1.Game.display.fillRect(this.position.x, this.position.y, this.size, this.size, this.color);
-        if (this.age > this.duration) {
-            this.destroy();
-        }
-    };
-    return ParticleActor;
-}(Actor_1.Actor));
+__webpack_require__(10);
 
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports) {
-
-module.exports = Tone;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var LZString = __webpack_require__(16);
-var Leaderboard = /** @class */ (function () {
-    function Leaderboard() {
-    }
-    Leaderboard.init = function () {
-        var playerIdStorage = localStorage.getItem(Leaderboard.playerIdKey);
-        if (playerIdStorage == null) {
-            window.fetch('/api/nextPlayerId').
-                then(function (result) { return result.json(); }).
-                then(function (json) {
-                Leaderboard.playerId = json.id;
-                localStorage.setItem(Leaderboard.playerIdKey, String(Leaderboard.playerId));
-            });
-        }
-        else {
-            Leaderboard.playerId = Number(playerIdStorage);
-        }
-    };
-    Leaderboard.get = function (isGettingLast, isGettingBest) {
-        if (isGettingLast === void 0) { isGettingLast = false; }
-        if (isGettingBest === void 0) { isGettingBest = false; }
-        if (Leaderboard.playerId == null) {
-            Leaderboard.scores = null;
-            return;
-        }
-        var uri = '/api/score';
-        if (isGettingLast) {
-            uri += "?score=" + Leaderboard.lastScore + "&count=9";
-        }
-        else if (isGettingBest) {
-            uri += "?playerId=" + Leaderboard.playerId;
-        }
-        window.fetch(uri).
-            then(function (result) { return result.json(); }).
-            then(function (json) {
-            Leaderboard.scores = json;
-            if (isGettingLast) {
-                Leaderboard.scores.push({ score: Leaderboard.lastScore, playerId: Leaderboard.playerId });
-                Leaderboard.scores = Leaderboard.scores.sort(function (a, b) {
-                    if (a.score < b.score) {
-                        return -1;
-                    }
-                    else if (a.score > b.score) {
-                        return 1;
-                    }
-                    return 0;
-                });
-            }
-        });
-    };
-    Leaderboard.set = function (score) {
-        Leaderboard.lastScore = score;
-        window.fetch("/api/key?playerId=" + Leaderboard.playerId).
-            then(function (result) { return result.json(); }).
-            then(function (json) {
-            var key = json.key;
-            var headers = new Headers();
-            headers.append('Content-Type', 'application/json');
-            var encDataStr = LZString.compressToEncodedURIComponent(JSON.stringify({
-                key: key,
-                score: {
-                    playerId: Leaderboard.playerId,
-                    score: score
-                }
-            }));
-            window.fetch('/api/score', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                    data: encDataStr
-                })
-            });
-        });
-    };
-    Leaderboard.playerIdKey = "worm-drive";
-    Leaderboard.lastScore = 0;
-    return Leaderboard;
-}());
-exports.Leaderboard = Leaderboard;
-
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
@@ -2237,6 +2164,82 @@ if (true) {
   module.exports = LZString
 }
 
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var Actor_1 = __webpack_require__(6);
+var Game_1 = __webpack_require__(2);
+var Color_1 = __webpack_require__(1);
+var Vector_1 = __webpack_require__(0);
+var Random_1 = __webpack_require__(11);
+var ParticleSystem = /** @class */ (function () {
+    function ParticleSystem() {
+        this.count = 1;
+        this.position = new Vector_1.Vector(0, 0);
+        this.angleWidth = 360;
+        this.speed = 0.01;
+        this.color = Color_1.Color.white;
+        this.size = 0.02;
+        this.duration = 30;
+        var actor = new ParticleActor();
+        actor.particleSystem = this;
+    }
+    return ParticleSystem;
+}());
+exports.ParticleSystem = ParticleSystem;
+var ParticleActor = /** @class */ (function (_super) {
+    __extends(ParticleActor, _super);
+    function ParticleActor() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ParticleActor.prototype.update = function () {
+        if (this.particleSystem) {
+            // if we are generating particles, spawn them and bail
+            this.destroy();
+            var s = this.particleSystem;
+            if (s.count < 1) {
+                return;
+            }
+            for (var i = 0; i < s.count; i++) {
+                var p = new ParticleActor();
+                p.position.set(s.position.x, s.position.y);
+                p.velocity.addDirection(Random_1.Random.range(-s.angleWidth / 2, s.angleWidth / 2), s.speed * Random_1.Random.range(0.5, 1.5));
+                p.color = s.color;
+                p.size = s.size;
+                p.duration = s.duration;
+            }
+            return;
+        }
+        // otherwise just do a draw loop on ourself
+        Game_1.Game.display.fillRect(this.position.x, this.position.y, this.size, this.size, this.color);
+        if (this.age > this.duration) {
+            this.destroy();
+        }
+    };
+    return ParticleActor;
+}(Actor_1.Actor));
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = Tone;
 
 /***/ })
 /******/ ]);
