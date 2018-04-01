@@ -15,7 +15,7 @@ class WormDriveGame extends Game
         freeverb.wet.rampTo(0, 3);
         Tone.Transport.scheduleOnce(function(time){
             console.log("should be starting second track")
-            vol.volume.rampTo(0, 3);
+            vol.volume.rampTo(0.0001, 3);
         }, "@1m");
     }
     updateTitle()
@@ -207,7 +207,7 @@ class Player extends Actor
     currentGap:number = 4;
     turnSpeed:number = 4;
     bodySegments:BodySegment[] = []
-    spawnRemaining:number = 0;
+    spawnRemaining:number = 1;
     moveSpeed:number = 0.005;
     spawnPosition : Vector;
     overlapDrawing : Drawing;
@@ -231,6 +231,7 @@ class Player extends Actor
             .setColor(Color.red)
             .addRect(0.01, 0.01, 0.04)
             .addArc(20, 18)
+        this.spawnPosition = new Vector(0.5, 0.5);
     }
     private getSpawnPosition()
     {
@@ -291,6 +292,27 @@ class Player extends Actor
                 }
             }
         }
+        if(this.bodySegments.length>0)
+        {
+            
+            var a = new Vector(this.position.x, this.position.y).addDirection(this.rotation, 0.05);
+            var b = this.bodySegments[0].position;
+            for (var i = 1; i < this.bodySegments.length - 1; i++) {
+                var c = this.bodySegments[i].position;
+                var d = this.bodySegments[i + 1].position;
+                if (lineIntersecting(a, b, c, d)) {
+                    overlapCount++;
+                    var intersection = new Vector(a.x, a.y).add(b).add(c).add(d).divide(4);
+                    this.intersections.push(intersection);
+                    this.overlapDrawing
+                        .setRotation(this.age)
+                        .setPosition(intersection)
+                        .draw();
+                }
+            }
+        }
+
+
         if(Keyboard.keyDown[Keyboard.LEFT])
         {
             this.rotation -= this.turnSpeed;
@@ -317,7 +339,10 @@ class Player extends Actor
             a.chooseNewPosition();
         }))
         {
-            [apple1,apple2,apple3,apple4][Random.rangeInt(0,3)].start();            
+            if(audioReady)
+            {
+                [apple1,apple2,apple3,apple4][Math.min(3, Random.rangeInt(0,3))].start();
+            }
             // add score
             this.intersections.forEach(intersection => {
                 new TextActor(`+1`).setPosition(intersection).setDuration(30).setVelocity(new Vector(0,-0.001));
@@ -335,7 +360,6 @@ class Player extends Actor
             ps.count = 10;
             ps.color = Color.blue;
             g.endGame();
-            [dead1, dead2][Random.rangeInt(0,1)].start();
         }
     }
 }
@@ -352,29 +376,35 @@ var track2 = new Tone.Player({
 }).chain(vol, Tone.Master).sync().start(0);
 var dead1 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fdead1.wav?1516678342035"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var dead2 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fdead2.wav?1516678342465"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple1 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple1.wav?1516678342084"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple2 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple2.wav?1516678342530"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple3 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple3.wav?1516678342310"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple4 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple4.wav?1516678342139"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 Tone.Transport.loop = true;
 Tone.Transport.loopStart = "0m";
 Tone.Transport.loopEnd = "64m";
+var audioReady = false;
 window.onload = function()
 {
+
     Tone.Buffer.on("load", ()=>{
         Tone.Transport.start("+0.1");
+        audioReady = true;
+        [apple1,apple2,apple3,apple4,dead1,dead2].forEach(s=>{
+            s.retrigger = true;
+        });
     });
     Config.title = "WORM DRIVE";
     Leaderboard.init();

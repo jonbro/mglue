@@ -1279,7 +1279,7 @@ var WormDriveGame = /** @class */ (function (_super) {
         freeverb.wet.rampTo(0, 3);
         Tone.Transport.scheduleOnce(function (time) {
             console.log("should be starting second track");
-            vol.volume.rampTo(0, 3);
+            vol.volume.rampTo(0.0001, 3);
         }, "@1m");
     };
     WormDriveGame.prototype.updateTitle = function () {
@@ -1465,7 +1465,7 @@ var Player = /** @class */ (function (_super) {
         _this.currentGap = 4;
         _this.turnSpeed = 4;
         _this.bodySegments = [];
-        _this.spawnRemaining = 0;
+        _this.spawnRemaining = 1;
         _this.moveSpeed = 0.005;
         _this.intersections = [];
         _this.priorPositions = new PositionBuffer();
@@ -1488,6 +1488,7 @@ var Player = /** @class */ (function (_super) {
             .setColor(Mglue_1.Color.red)
             .addRect(0.01, 0.01, 0.04)
             .addArc(20, 18);
+        this.spawnPosition = new Mglue_1.Vector(0.5, 0.5);
     };
     Player.prototype.getSpawnPosition = function () {
         if (this.bodySegments.length == 0) {
@@ -1511,22 +1512,39 @@ var Player = /** @class */ (function (_super) {
             this.priorPositions.growBuffer(this.segmentLength, this.spawnPosition);
         }
         // update all the body segment positions
-        for (var i = this.bodySegments.length - 1; i >= 0; i--) {
-            var cSeg = this.bodySegments[i];
-            cSeg.setPosition(this.priorPositions.getPosition((i + 1) * this.segmentLength));
+        for (var i_1 = this.bodySegments.length - 1; i_1 >= 0; i_1--) {
+            var cSeg = this.bodySegments[i_1];
+            cSeg.setPosition(this.priorPositions.getPosition((i_1 + 1) * this.segmentLength));
         }
         // see how many line segments overlap
         var overlapCount = 0;
         this.intersections = [];
-        for (var i = 0; i < this.bodySegments.length - 1; i++) {
-            var a = this.bodySegments[i].position;
-            var b = this.bodySegments[i + 1].position;
-            for (var j = i; j < this.bodySegments.length - 1; j++) {
-                if (Math.abs(i - j) < 4) {
+        for (var i_2 = 0; i_2 < this.bodySegments.length - 1; i_2++) {
+            var a_1 = this.bodySegments[i_2].position;
+            var b_1 = this.bodySegments[i_2 + 1].position;
+            for (var j = i_2; j < this.bodySegments.length - 1; j++) {
+                if (Math.abs(i_2 - j) < 4) {
                     continue;
                 }
-                var c = this.bodySegments[j].position;
-                var d = this.bodySegments[j + 1].position;
+                var c_1 = this.bodySegments[j].position;
+                var d_1 = this.bodySegments[j + 1].position;
+                if (lineIntersecting(a_1, b_1, c_1, d_1)) {
+                    overlapCount++;
+                    var intersection_1 = new Mglue_1.Vector(a_1.x, a_1.y).add(b_1).add(c_1).add(d_1).divide(4);
+                    this.intersections.push(intersection_1);
+                    this.overlapDrawing
+                        .setRotation(this.age)
+                        .setPosition(intersection_1)
+                        .draw();
+                }
+            }
+        }
+        if (this.bodySegments.length > 0) {
+            var a = new Mglue_1.Vector(this.position.x, this.position.y).addDirection(this.rotation, 0.05);
+            var b = this.bodySegments[0].position;
+            for (var i = 1; i < this.bodySegments.length - 1; i++) {
+                var c = this.bodySegments[i].position;
+                var d = this.bodySegments[i + 1].position;
                 if (lineIntersecting(a, b, c, d)) {
                     overlapCount++;
                     var intersection = new Mglue_1.Vector(a.x, a.y).add(b).add(c).add(d).divide(4);
@@ -1559,7 +1577,9 @@ var Player = /** @class */ (function (_super) {
         if (this.checkOverlap(Apple, function (a) {
             a.chooseNewPosition();
         })) {
-            [apple1, apple2, apple3, apple4][Mglue_1.Random.rangeInt(0, 3)].start();
+            if (audioReady) {
+                [apple1, apple2, apple3, apple4][Math.min(3, Mglue_1.Random.rangeInt(0, 3))].start();
+            }
             // add score
             this.intersections.forEach(function (intersection) {
                 new Mglue_1.TextActor("+1").setPosition(intersection).setDuration(30).setVelocity(new Mglue_1.Vector(0, -0.001));
@@ -1576,7 +1596,6 @@ var Player = /** @class */ (function (_super) {
             ps.count = 10;
             ps.color = Mglue_1.Color.blue;
             g.endGame();
-            [dead1, dead2][Mglue_1.Random.rangeInt(0, 1)].start();
         }
     };
     return Player;
@@ -1594,28 +1613,33 @@ var track2 = new Tone.Player({
 }).chain(vol, Tone.Master).sync().start(0);
 var dead1 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fdead1.wav?1516678342035"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var dead2 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fdead2.wav?1516678342465"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple1 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple1.wav?1516678342084"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple2 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple2.wav?1516678342530"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple3 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple3.wav?1516678342310"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 var apple4 = new Tone.Player({
     url: "https://cdn.glitch.com/8dba72cf-1aa9-4bca-8d4f-1245829d7b86%2Fapple4.wav?1516678342139"
-}).connect(Tone.Master).sync();
+}).connect(Tone.Master);
 Tone.Transport.loop = true;
 Tone.Transport.loopStart = "0m";
 Tone.Transport.loopEnd = "64m";
+var audioReady = false;
 window.onload = function () {
     Tone.Buffer.on("load", function () {
         Tone.Transport.start("+0.1");
+        audioReady = true;
+        [apple1, apple2, apple3, apple4, dead1, dead2].forEach(function (s) {
+            s.retrigger = true;
+        });
     });
     Mglue_1.Config.title = "WORM DRIVE";
     Leaderboard_1.Leaderboard.init();
