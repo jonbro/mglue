@@ -2,6 +2,8 @@ node_modules/
 *.log
 *.tgz
 
+.data/
+.vscode/
 client_src/
 public/
 tsconfig.json
