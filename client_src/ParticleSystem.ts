@@ -1,11 +1,11 @@
-import { Actor } from "./Actor";
 import { Game } from "./Game";
 import { Color } from "./Color"
+import { Actor } from "./Actor"
 import { Display } from "./Display";
 import { Vector } from "./Vector";
 import { Random } from "./Random";
 
-class ParticleSystem
+export class ParticleSystem
 {
     count : number = 1;
     position : Vector = new Vector(0,0);
@@ -55,4 +55,3 @@ class ParticleActor extends Actor
         }
     }
 }
-export { ParticleSystem }

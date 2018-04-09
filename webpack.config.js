@@ -1,7 +1,6 @@
 const path = require('path');
-
 module.exports = {
-  entry: './client_src/WormDrive.ts',
+  entry: './client_src/mglue.ts',
   module: {
     rules: [
       {
@@ -14,11 +13,10 @@ module.exports = {
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ]
   },
-  externals: {
-    tone: 'Tone'
-  },
   output: {
-    filename: 'client.js',
-    path: path.resolve(__dirname, 'public')
+    filename: 'index.js',
+    library: "mglue",
+    libraryTarget: 'umd',
+    path: path.resolve(__dirname, 'dist'),
   }
 };

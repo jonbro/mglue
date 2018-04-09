@@ -13,16 +13,16 @@ export class Mouse
         Display.element.addEventListener('mouseup', Mouse.onMouseUp);
         Display.element.addEventListener('mousemove', Mouse.onMouseMove);
     }
-    static onMouseUp(e)
+    static onMouseUp(e:any)
     {
         Mouse.isPressed = false;
     }
-    static onMouseDown(e)
+    static onMouseDown(e:any)
     {
         Mouse.isPressed = true;
         Mouse.onMouseMove(e);
     }
-    static onMouseMove(e)
+    static onMouseMove(e:any)
     {
         e.preventDefault()
         //@wasMoving = true

@@ -1,0 +1,14 @@
+node_modules/
+*.log
+*.tgz
+
+client_src/
+public/
+tsconfig.json
+webpack.config.js
+todo.txt
+server.js
+mglcoffeegames/
+public/
+css/
+dist/

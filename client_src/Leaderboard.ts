@@ -1,5 +1,5 @@
 import * as LZString from "lz-string";
-interface LeaderboardScore
+export interface LeaderboardScore
 {
     playerId:number;
     score:number;
@@ -85,4 +85,4 @@ class Leaderboard
             });
     }
 }
-export { Leaderboard, LeaderboardScore }
+export { Leaderboard }

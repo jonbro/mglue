@@ -1,5 +1,0 @@
-[ ] fix up the live reload stuff
-[ ] add fixed segment lengths
-[ ] upload the game
-[ ] make a screenshot for twitter
-[ ] release the dang thing (tomorrow morning)

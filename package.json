@@ -1,8 +1,10 @@
 {
-  "name": "worm-drive",
-  "version": "1.0.0",
-  "description": "puzzly snake game",
-  "main": "server.js",
+  "name": "mglue",
+  "version": "1.0.0-prerelease.1",
+  "description": "tiny game library",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "typings": "dist/dist/mglue.d.ts",
   "scripts": {
     "start": "node server.js",
     "build_client": "webpack --env.build",

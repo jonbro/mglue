@@ -2,7 +2,7 @@ import { Color } from "./Color";
 import { Game } from "./Game";
 import { Drawing } from "./Drawing";
 import { Vector } from "./Vector";
-class ActorGroup
+export class ActorGroup
 {
     name : string;
     members : Actor[];
@@ -38,7 +38,7 @@ class ActorGroup
         }
     }
 }
-class Actor
+export class Actor
 {
     private static groups : ActorGroup[] = [];
     position : Vector;
@@ -115,7 +115,7 @@ class Actor
         this.drawing.draw();
         this.age++;
     }
-    checkOverlap(targetClass, handler?:Function)
+    checkOverlap(targetClass:any, handler?:Function)
     : boolean
     {
         let res = false;
@@ -146,7 +146,7 @@ class Actor
             group.clear();
         });
     }
-    static getGroup(targetClass)
+    static getGroup(targetClass:any)
     : Actor[]
     {
         let classname : string = targetClass["name"];
@@ -173,11 +173,11 @@ class Actor
         });
     }
 }
-class TextActor extends Actor
+export class TextActor extends Actor
 {
     duration : number;
     xAlign : number;
-    displayString : string;
+    displayString : string = "";
     color : Color;
     constructor(s : string)
     {
@@ -226,4 +226,3 @@ class TextActor extends Actor
         return this;
     }
 }
-export { Actor, TextActor };
