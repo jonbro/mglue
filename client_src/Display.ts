@@ -2,14 +2,22 @@ import { Color } from "./Color";
 import { Vector } from "./Vector";
 import { Config } from "./Config";
 import { TextDrawer } from "./Drawing"
+
+export interface DisplayInterface extends Display {}
+
 export class Display
 {
     static element: HTMLCanvasElement;
-    private context: CanvasRenderingContext2D;
+    protected context: CanvasRenderingContext2D;
     static size : Vector = new Vector(0,0);
-    private resizeTimer : any;
-    private textDrawer : TextDrawer = new TextDrawer();
+    protected resizeTimer : any;
+    protected textDrawer : TextDrawer = new TextDrawer();
     constructor()
+    {
+        this.buildDisplay();
+        this.setSize();
+    }
+    protected buildDisplay()
     {
         let displayElement = document.getElementById("display");
         Display.element = <HTMLCanvasElement>displayElement;
@@ -22,7 +30,6 @@ export class Display
             }
             this.resizeTimer = setTimeout(this.setSize, 200);
         }
-        this.setSize();
     }
     setSize()
     {
@@ -30,28 +37,27 @@ export class Display
         Display.element.width = Display.element.height = clientWidth 
         Display.size.set(clientWidth, clientWidth);
     }
+    preUpdate()
+    {
+        this.clear();
+    }
     clear()
     {
         this.context.fillStyle = Config.backgroundColor.toString()
         this.context.fillRect(0,0,Display.size.x, Display.size.y);
     }
-    preUpdate()
-    {
-        this.clear();
-    }
     fillRect(x : number,y : number,width : number,height : number, color : Color = Color.white)
     {
-        this.context.fillStyle = color.toString();
-        this.context.fillRect(
-            (x-width/2) * Display.size.x,
-            (y-height / 2) * Display.size.y,
-            width * Display.size.x,
-            height * Display.size.y
-        );
+        this.fillRectDirect((x-width/2) * Display.size.x,
+        (y-height / 2) * Display.size.y,
+        width * Display.size.x,
+        height * Display.size.y,
+        color);
     }
-    fillRectDirect(x, y, width, height, color = Color.white)
+    fillRectDirect(x :number, y : number, width : number, height : number, color : Color = Color.white)
+    : void
     {
-        this.context.fillStyle = color.toString();
+        this.context.fillStyle = color ? color.toString() : Color.white.toString();
         this.context.fillRect(x, y, width, height);
     }
     drawText(text : string, x : number, y : number, alignX = -1, alignY = -1, color = Color.white, scale = 1)

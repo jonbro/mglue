@@ -19,7 +19,11 @@ export class Keyboard
                 Keyboard.keyDown[e.keyCode] = true;
                 if(e.keyCode >= 37 && e.keyCode <= 40)
                 {
-                    e.preventDefault()
+                    e.preventDefault();
+                }
+                if(e.keyCode == 32)
+                {
+                    e.preventDefault();
                 }
             }
             window.onkeyup = (e) =>

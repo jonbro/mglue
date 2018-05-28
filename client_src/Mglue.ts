@@ -2,7 +2,7 @@ export {Vector} from "./Vector";
 export {Random} from "./Random"
 export {Actor, TextActor} from "./Actor";
 export {Color} from "./Color";
-export {Display} from "./Display";
+export {Display, DisplayInterface} from "./Display";
 export {Config} from "./Config";
 export {Mouse} from "./Mouse";
 export {ParticleSystem} from "./ParticleSystem"

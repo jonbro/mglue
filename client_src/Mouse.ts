@@ -21,6 +21,7 @@ export class Mouse
     {
         Mouse.isPressed = true;
         Mouse.onMouseMove(e);
+        window.focus();
     }
     static onMouseMove(e:any)
     {
@@ -30,12 +31,4 @@ export class Mouse
         Mouse.position.x = ((e.pageX - rect.left) / Display.size.x)
         Mouse.position.y = ((e.pageY - rect.top) / Display.size.y)
     }
-    /*
-@onMouseDown: (e) =>
-    @ip = true
-    @onMouseMove e
-    G.onfocus()
-@onMouseUp: (e) =>
-@ip = false
-*/
 }

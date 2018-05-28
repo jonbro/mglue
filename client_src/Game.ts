@@ -1,5 +1,5 @@
 import { Color } from "./Color";
-import { Display } from "./Display";
+import { Display, DisplayInterface } from "./Display";
 import { Actor, TextActor } from "./Actor";
 import { Config } from "./Config";
 import { Mouse } from "./Mouse";
@@ -8,6 +8,7 @@ import { Keyboard } from "./Keyboard"
 import { Leaderboard } from "./Leaderboard";
 import "./Extensions";
 
+// this wrapper is no longer necessary :/
 var requestAnimationFrameWrapper =
 	window.requestAnimationFrame	   ||
 	window.webkitRequestAnimationFrame ||
@@ -40,7 +41,7 @@ type GameState = typeof GameState;
 class Game
 {
     public static INTERVAL : number;
-    public static display: Display;
+    public static display: DisplayInterface;
     private currentTime : number = 0;
     private previousTime : number = 0;
     private delta : number = 0;
@@ -50,14 +51,15 @@ class Game
     public ticks : number = 0;
     currentState = GameState.title;
     public get gameOver() { return this.currentState!=GameState.game; }
-    constructor()
+    constructor(display : DisplayInterface = new Display())
     {
         if(window.localStorage.getItem(Config.saveName))
         {
             this.highScore = Number(window.localStorage.getItem(Config.saveName));
         }
         Game.INTERVAL = 1000/Config.fps;
-        Game.display = new Display();
+        Game.display = display;
+        Keyboard.initialize();
         Mouse.initialize();
         this.transitionToTitle();
         requestAnimationFrame((time) => {this.updateFrame(time)});
