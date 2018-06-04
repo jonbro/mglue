@@ -1,5 +1,6 @@
 import { Vector } from "./Vector";
 import { Display } from "./Display";
+import { Game } from "./Game"
 
 export class Keyboard
 {
@@ -14,7 +15,7 @@ export class Keyboard
         Keyboard.keyDown = [];
         for (let i = 0; i < 255; i++) {
             Keyboard.keyDown[i] = false;
-            window.onkeydown = (e) =>
+            Display.element.onkeydown = (e) =>
             {
                 Keyboard.keyDown[e.keyCode] = true;
                 if(e.keyCode >= 37 && e.keyCode <= 40)
@@ -26,11 +27,11 @@ export class Keyboard
                     e.preventDefault();
                 }
             }
-            window.onkeyup = (e) =>
+            Display.element.onkeyup = (e) =>
             {
                 Keyboard.keyDown[e.keyCode] = false;
             }
         }
     }
 }
-Keyboard.initialize();
+//Keyboard.initialize();

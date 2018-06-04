@@ -7,7 +7,7 @@ export interface DisplayInterface extends Display {}
 
 export class Display
 {
-    static element: HTMLCanvasElement;
+    static element: HTMLCanvasElement = null;
     protected context: CanvasRenderingContext2D;
     static size : Vector = new Vector(0,0);
     protected resizeTimer : any;
@@ -33,9 +33,10 @@ export class Display
     }
     setSize()
     {
-        let clientWidth = Display.element.clientWidth;
-        Display.element.width = Display.element.height = clientWidth 
-        Display.size.set(clientWidth, clientWidth);
+        let displayParent = document.getElementById("displayDiv");
+        let shortEdge = Math.min(displayParent.clientWidth, displayParent.clientHeight);
+        Display.element.width = Display.element.height = shortEdge;
+        Display.size.set(shortEdge, shortEdge);
     }
     preUpdate()
     {

@@ -19,9 +19,9 @@ export class Mouse
     }
     static onMouseDown(e:any)
     {
+        Display.element.focus();
         Mouse.isPressed = true;
         Mouse.onMouseMove(e);
-        window.focus();
     }
     static onMouseMove(e:any)
     {

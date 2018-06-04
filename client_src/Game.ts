@@ -13,12 +13,13 @@ var requestAnimationFrameWrapper =
 	window.requestAnimationFrame	   ||
 	window.webkitRequestAnimationFrame ||
     function(callback)
+    : number
     {
-        window.setTimeout(callback, Game.INTERVAL / 2)
+        return window.setTimeout(callback, Game.INTERVAL / 2)
     }
-var requestAnimationFrame = (callback) =>
+var requestAnimationFrame = (callback) : number =>
 {
-	requestAnimationFrameWrapper(callback)
+	return requestAnimationFrameWrapper(callback)
 }
 // https://stackoverflow.com/questions/46025487/create-extendable-enums-for-use-in-extendable-interfaces
 type GameStateEnum<T extends string> = {[K in T]: K};
@@ -50,19 +51,26 @@ class Game
     public highScore : number = -1;
     public ticks : number = 0;
     currentState = GameState.title;
+    static animationFrameIdentifier : number;
     public get gameOver() { return this.currentState!=GameState.game; }
     constructor(display : DisplayInterface = new Display())
     {
+        // if there was a game running prior we need to make sure we clean up its animation loop
+        // lets us spawn off a bunch of games in a row without timing issues
+        window.cancelAnimationFrame(Game.animationFrameIdentifier);
+        // clean up any straggling actors
+        Actor.clear();
         if(window.localStorage.getItem(Config.saveName))
         {
             this.highScore = Number(window.localStorage.getItem(Config.saveName));
         }
         Game.INTERVAL = 1000/Config.fps;
         Game.display = display;
+        Display.element.focus();
         Keyboard.initialize();
         Mouse.initialize();
         this.transitionToTitle();
-        requestAnimationFrame((time) => {this.updateFrame(time)});
+        Game.animationFrameIdentifier = requestAnimationFrame((time) => {this.updateFrame(time)});
     }
     transitionToTitle()
     {
@@ -133,7 +141,7 @@ class Game
         {
             return true;
         }
-        requestAnimationFrame((time) => {this.updateFrame(time)});
+        Game.animationFrameIdentifier = requestAnimationFrame((time) => {this.updateFrame(time)});
         return false;
     }
     updateFrame(time : any)
@@ -156,11 +164,8 @@ class Game
     postUpdateFrame()
     {
         this.delta = 0;
-        requestAnimationFrame((time) => {this.updateFrame(time)});
+        Game.animationFrameIdentifier = requestAnimationFrame((time) => {this.updateFrame(time)});
     }
 }
-
-// test game, should move this elsewhere...
-
 
 export { Game };

@@ -65,11 +65,28 @@ export class Vector
         this.y -= other.y;
         return this;
     }
+    length()
+    : number
+    {
+        return Math.sqrt(this.x * this.x + this.y*this.y);
+    }
+    normalize()
+    : Vector
+    {
+        return this.divide(this.length());
+    }
     divide(scalar : number)
     : Vector
     {
         this.x /= scalar;
         this.y /= scalar;
+        return this;
+    }
+    multiply(scalar : number)
+    : Vector
+    {
+        this.x *= scalar;
+        this.y *= scalar;
         return this;
     }
     rotate(angleDegrees : number)
