@@ -437,35 +437,32 @@ var Mouse_1 = __webpack_require__(8);
 var Vector_1 = __webpack_require__(0);
 var Keyboard_1 = __webpack_require__(9);
 var Leaderboard_1 = __webpack_require__(10);
+var GameState_1 = __webpack_require__(15);
 __webpack_require__(11);
-// this wrapper is no longer necessary :/
-var requestAnimationFrameWrapper = window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    function (callback) {
-        return window.setTimeout(callback, Game.INTERVAL / 2);
-    };
-var requestAnimationFrame = function (callback) {
-    return requestAnimationFrameWrapper(callback);
-};
-// create an enum from given values
-function makeEnum() {
-    var vals = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        vals[_i] = arguments[_i];
-    }
-    var ret = {};
-    vals.forEach(function (k) { return ret[k] = k; });
-    return ret;
-}
-// take an existing enum and extend it with more values
-function extendEnum(firstEnum) {
-    var vals = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        vals[_i - 1] = arguments[_i];
-    }
-    return Object.assign(makeEnum.apply(void 0, vals), firstEnum);
-}
-var GameState = makeEnum("title", "game");
+/**
+ * Handles the core game loop. Subclass this to kick off your game.
+ * Runs updating all the actors, refreshing the display, transitioning between
+ * the title and the game, and tracking scores.
+ *
+ * ```
+ * class MyGame extends Game
+ * {
+ *     // when the game starts, spawn a new player
+ *     onBeginGame()
+ *     {
+ *         p = new Player();
+ *     }
+ *     // every 20 frames, while the game is playing, spawn an enemy
+ *     update()
+ *     {
+ *         if(this.currentState == "game" && this.ticks%20 == 0)
+ *         {
+ *             let e = new Enemy();
+ *         }
+ *     }
+ * }
+ * ```
+ */
 var Game = /** @class */ (function () {
     function Game(display) {
         if (display === void 0) { display = new Display_1.Display(); }
@@ -476,8 +473,8 @@ var Game = /** @class */ (function () {
         this.score = 0;
         this.lastScore = -1;
         this.highScore = -1;
-        this.ticks = 0;
-        this.currentState = GameState.title;
+        this._ticks = 0;
+        this.currentState = GameState_1.GameState.title;
         // if there was a game running prior we need to make sure we clean up its animation loop
         // lets us spawn off a bunch of games in a row without timing issues
         window.cancelAnimationFrame(Game.animationFrameIdentifier);
@@ -492,13 +489,39 @@ var Game = /** @class */ (function () {
         Keyboard_1.Keyboard.initialize();
         Mouse_1.Mouse.initialize();
         this.transitionToTitle();
-        Game.animationFrameIdentifier = requestAnimationFrame(function (time) { _this.updateFrame(time); });
+        Game.animationFrameIdentifier = Game.requestAnimationFrame(function (time) { _this.updateFrame(time); });
     }
-    Object.defineProperty(Game.prototype, "gameOver", {
-        get: function () { return this.currentState != GameState.game; },
+    Object.defineProperty(Game.prototype, "ticks", {
+        /** number of frames that has elapsed since the game started */
+        get: function () {
+            return this._ticks;
+        },
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Game.prototype, "gameOver", {
+        get: function () { return this.currentState != GameState_1.GameState.game; },
+        enumerable: true,
+        configurable: true
+    });
+    Game.prototype.endGame = function () {
+        this.lastScore = this.score;
+        if (this.lastScore > 0 && this.lastScore > this.highScore) {
+            this.highScore = this.lastScore;
+            window.localStorage.setItem(Config_1.Config.saveName, this.highScore.toString());
+        }
+        this.transitionToTitle();
+        this.currentState = GameState_1.GameState.title;
+        this.onEndGame();
+    };
+    Game.prototype.onBeginGame = function () { };
+    Game.prototype.onEndGame = function () { };
+    Game.prototype.update = function () { };
+    Game.prototype.updateTitle = function () {
+        if (Keyboard_1.Keyboard.keyDown[Keyboard_1.Keyboard.SPACE]) {
+            this.transitionToGame();
+        }
+    };
     Game.prototype.transitionToTitle = function () {
         var ty = (Config_1.Config.title.length == 1) ? .2 : .15;
         new Actor_1.TextActor(Config_1.Config.title).setPosition(new Vector_1.Vector(.5, ty)).setDurationForever().scale = new Vector_1.Vector(2, 2);
@@ -516,30 +539,11 @@ var Game = /** @class */ (function () {
             }
         }
     };
-    Game.prototype.endGame = function () {
-        this.lastScore = this.score;
-        if (this.lastScore > 0 && this.lastScore > this.highScore) {
-            this.highScore = this.lastScore;
-            window.localStorage.setItem(Config_1.Config.saveName, this.highScore.toString());
-        }
-        this.transitionToTitle();
-        this.currentState = GameState.title;
-        this.onEndGame();
-    };
     Game.prototype.transitionToGame = function () {
-        this.currentState = GameState.game;
+        this.currentState = GameState_1.GameState.game;
         this.score = 0;
         Actor_1.Actor.clear();
         this.onBeginGame();
-    };
-    // override
-    Game.prototype.onBeginGame = function () { };
-    Game.prototype.onEndGame = function () { };
-    Game.prototype.update = function () { };
-    Game.prototype.updateTitle = function () {
-        if (Keyboard_1.Keyboard.keyDown[Keyboard_1.Keyboard.SPACE]) {
-            this.transitionToGame();
-        }
     };
     Game.prototype.preUpdateFrame = function (time) {
         var _this = this;
@@ -554,7 +558,7 @@ var Game = /** @class */ (function () {
         if (this.delta >= 0.75) {
             return true;
         }
-        Game.animationFrameIdentifier = requestAnimationFrame(function (time) { _this.updateFrame(time); });
+        Game.animationFrameIdentifier = Game.requestAnimationFrame(function (time) { _this.updateFrame(time); });
         return false;
     };
     Game.prototype.updateFrame = function (time) {
@@ -562,10 +566,10 @@ var Game = /** @class */ (function () {
             return;
         }
         Game.display.preUpdate();
-        this.ticks++;
+        this._ticks++;
         this.update();
         Actor_1.Actor.update();
-        if (this.currentState == GameState.title) {
+        if (this.currentState == GameState_1.GameState.title) {
             this.updateTitle();
         }
         Game.display.drawText("SCORE: " + this.score, 1, 0, 1);
@@ -574,7 +578,15 @@ var Game = /** @class */ (function () {
     Game.prototype.postUpdateFrame = function () {
         var _this = this;
         this.delta = 0;
-        Game.animationFrameIdentifier = requestAnimationFrame(function (time) { _this.updateFrame(time); });
+        Game.animationFrameIdentifier = Game.requestAnimationFrame(function (time) { _this.updateFrame(time); });
+    };
+    Game.requestAnimationFrameWrapper = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        function (callback) {
+            return window.setTimeout(callback, Game.INTERVAL / 2);
+        };
+    Game.requestAnimationFrame = function (callback) {
+        return Game.requestAnimationFrameWrapper(callback);
     };
     return Game;
 }());
@@ -602,35 +614,42 @@ var Color_1 = __webpack_require__(1);
 var Game_1 = __webpack_require__(3);
 var Drawing_1 = __webpack_require__(6);
 var Vector_1 = __webpack_require__(0);
-var ActorGroup = /** @class */ (function () {
-    function ActorGroup(name) {
-        this.displayPriority = 1;
-        this.name = name;
-        this.clear();
-    }
-    ActorGroup.prototype.clear = function () {
-        this.members = [];
-    };
-    ActorGroup.prototype.update = function () {
-        var i = 0;
-        while (true) {
-            if (i >= this.members.length) {
-                break;
-            }
-            var a = this.members[i];
-            if (!a.isDestroying) {
-                a.update();
-                a.lateUpdate();
-                i++;
-            }
-            else {
-                this.members.splice(i, 1);
-            }
-        }
-    };
-    return ActorGroup;
-}());
-exports.ActorGroup = ActorGroup;
+/**
+ * You are going to make your game out of a pile of these.
+ * Contains very basic movement, updating, and drawing.
+ * Also where you handle overlap detection and removing things from groups.
+ *
+ * ```
+ * class Enemy extends Actor
+ * {
+ *      begin()
+ *      {
+ *
+ *          // this actor will move down the screen 1/100 of the distance per frame
+ *          // velocity is automatically integrated after the update call
+ *          this.velocity.set(0, 0.01);
+ *
+ *          // setup the drawing that will be used for this actor
+ *          // drawn to the screen after every update
+ *          this.drawing
+ *              .setColor(Color.red)
+ *              .addRect(0.01);
+ *      }
+ *      update()
+ *      {
+ *          // check if this object is overlapping an actor of type Player
+ *          this.checkOverlap(Player, (p:player)=>{
+ *              // destroy the player that is overlapped
+ *              p.destroy();
+ *          });
+ *      }
+ * }
+ * ```
+ *
+ * The drawing property is also what is used for overlap checks between actors, so if you want differently sized hitboxes,
+ * make sure to add additional drawings to your actor.
+ *
+ */
 var Actor = /** @class */ (function () {
     function Actor() {
         var args = [];
@@ -640,6 +659,7 @@ var Actor = /** @class */ (function () {
         this.velocity = new Vector_1.Vector(0, 0);
         this.rotation = 0;
         this.isDestroying = false;
+        /** Number of frames the actor has been alive for. */
         this.age = 0;
         this.drawing = new Drawing_1.Drawing();
         this.position = new Vector_1.Vector(0, 0);
@@ -668,6 +688,7 @@ var Actor = /** @class */ (function () {
     }
     Actor.prototype.initialize = function () {
     };
+    /** Mark this actor to be removed from the game at the end of the current update loop. */
     Actor.prototype.destroy = function () {
         this.isDestroying = true;
     };
@@ -741,6 +762,7 @@ var Actor = /** @class */ (function () {
         });
     };
     Actor.groups = [];
+    /** Number of actors in the game. */
     Actor.totalCount = 0;
     return Actor;
 }());
@@ -786,6 +808,51 @@ var TextActor = /** @class */ (function (_super) {
     return TextActor;
 }(Actor));
 exports.TextActor = TextActor;
+/**
+ * Collection of Actors. Each new actor subclass generates a group, though you can create further ones if necessary.
+ * Actors are automatically added to their class group on creation.
+ * The main actor groups are tracked by `Game` to handle updating, so don't mess with them too much.
+ *
+ * Most accessing of this class happens through the actor class.
+ *
+ * ```
+ * class Player extents Actor {}
+ * let p = new Player();
+ * if(Actor.getGroup(Player).members[0] == p)
+ * {
+ *      console.log("you found the player!");
+ * }
+ * ```
+ */
+var ActorGroup = /** @class */ (function () {
+    function ActorGroup(name) {
+        this.displayPriority = 1;
+        this.name = name;
+        this.clear();
+    }
+    ActorGroup.prototype.clear = function () {
+        this.members = [];
+    };
+    ActorGroup.prototype.update = function () {
+        var i = 0;
+        while (true) {
+            if (i >= this.members.length) {
+                break;
+            }
+            var a = this.members[i];
+            if (!a.isDestroying) {
+                a.update();
+                a.lateUpdate();
+                i++;
+            }
+            else {
+                this.members.splice(i, 1);
+            }
+        }
+    };
+    return ActorGroup;
+}());
+exports.ActorGroup = ActorGroup;
 
 
 /***/ }),
@@ -1913,6 +1980,38 @@ var ParticleActor = /** @class */ (function (_super) {
     };
     return ParticleActor;
 }(Actor_1.Actor));
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// NOTE: this is really not great, should just replace it with some kind of simpler state lookup,
+// either functions that resolve to numbers or just strings
+// https://stackoverflow.com/questions/46025487/create-extendable-enums-for-use-in-extendable-interfaces
+Object.defineProperty(exports, "__esModule", { value: true });
+// create an enum from given values
+function makeEnum() {
+    var vals = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        vals[_i] = arguments[_i];
+    }
+    var ret = {};
+    vals.forEach(function (k) { return ret[k] = k; });
+    return ret;
+}
+// take an existing enum and extend it with more values
+function extendEnum(firstEnum) {
+    var vals = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        vals[_i - 1] = arguments[_i];
+    }
+    return Object.assign(makeEnum.apply(void 0, vals), firstEnum);
+}
+var GameState = makeEnum("title", "game");
+exports.GameState = GameState;
 
 
 /***/ })

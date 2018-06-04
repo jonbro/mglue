@@ -2,42 +2,43 @@ import { Color } from "./Color";
 import { Game } from "./Game";
 import { Drawing } from "./Drawing";
 import { Vector } from "./Vector";
-export class ActorGroup
-{
-    name : string;
-    members : Actor[];
-    displayPriority: number = 1;
-    constructor(name : string)
-    {
-        this.name = name;
-        this.clear();
-    }
-    clear()
-    {
-        this.members = [];
-    }
-    update()
-    {
-        let i = 0;
-        while(true)
-        {
-            if(i>=this.members.length)
-            {
-                break;
-            }
-            let a = this.members[i];
-            if(!a.isDestroying)
-            {
-                a.update()
-                a.lateUpdate();
-                i++;
-            }else
-            {
-                this.members.splice(i, 1);
-            }
-        }
-    }
-}
+
+/**
+ * You are going to make your game out of a pile of these.
+ * Contains very basic movement, updating, and drawing.
+ * Also where you handle overlap detection and removing things from groups.
+ * 
+ * ```
+ * class Enemy extends Actor
+ * {
+ *      begin()
+ *      {
+ * 
+ *          // this actor will move down the screen 1/100 of the distance per frame
+ *          // velocity is automatically integrated after the update call
+ *          this.velocity.set(0, 0.01);
+ * 
+ *          // setup the drawing that will be used for this actor
+ *          // drawn to the screen after every update
+ *          this.drawing
+ *              .setColor(Color.red)
+ *              .addRect(0.01);
+ *      }
+ *      update()
+ *      {
+ *          // check if this object is overlapping an actor of type Player
+ *          this.checkOverlap(Player, (p:player)=>{
+ *              // destroy the player that is overlapped
+ *              p.destroy();
+ *          });
+ *      }
+ * }
+ * ```
+ * 
+ * The drawing property is also what is used for overlap checks between actors, so if you want differently sized hitboxes,
+ * make sure to add additional drawings to your actor.
+ * 
+ */
 export class Actor
 {
     private static groups : ActorGroup[] = [];
@@ -47,8 +48,10 @@ export class Actor
     scale : Vector;
     drawing : Drawing;
     isDestroying : boolean = false;
+    /** Number of frames the actor has been alive for. */
     age : number = 0;
     group : ActorGroup;
+    /** Number of actors in the game. */
     static totalCount : number = 0;
     constructor(...args: any[])
     {
@@ -83,11 +86,12 @@ export class Actor
     {
 
     }
+    /** Mark this actor to be removed from the game at the end of the current update loop. */
     destroy()
     {
         this.isDestroying = true;
     }
-    begin(...args: any[])
+    protected begin(...args: any[])
     {
         
     }
@@ -224,5 +228,59 @@ export class TextActor extends Actor
     {
         super.setPosition(p);
         return this;
+    }
+}
+
+/**
+ * Collection of Actors. Each new actor subclass generates a group, though you can create further ones if necessary.
+ * Actors are automatically added to their class group on creation.
+ * The main actor groups are tracked by `Game` to handle updating, so don't mess with them too much.
+ * 
+ * Most accessing of this class happens through the actor class.
+ * 
+ * ```
+ * class Player extents Actor {}
+ * let p = new Player();
+ * if(Actor.getGroup(Player).members[0] == p)
+ * {
+ *      console.log("you found the player!");
+ * }
+ * ```
+ */
+
+export class ActorGroup
+{
+    name : string;
+    members : Actor[];
+    displayPriority: number = 1;
+    constructor(name : string)
+    {
+        this.name = name;
+        this.clear();
+    }
+    clear()
+    {
+        this.members = [];
+    }
+    update()
+    {
+        let i = 0;
+        while(true)
+        {
+            if(i>=this.members.length)
+            {
+                break;
+            }
+            let a = this.members[i];
+            if(!a.isDestroying)
+            {
+                a.update()
+                a.lateUpdate();
+                i++;
+            }else
+            {
+                this.members.splice(i, 1);
+            }
+        }
     }
 }

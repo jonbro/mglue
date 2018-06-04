@@ -6,38 +6,33 @@ import { Mouse } from "./Mouse";
 import { Vector } from "./Vector";
 import { Keyboard } from "./Keyboard"
 import { Leaderboard } from "./Leaderboard";
+import {GameState} from "./GameState";
 import "./Extensions";
 
-// this wrapper is no longer necessary :/
-var requestAnimationFrameWrapper =
-	window.requestAnimationFrame	   ||
-	window.webkitRequestAnimationFrame ||
-    function(callback)
-    : number
-    {
-        return window.setTimeout(callback, Game.INTERVAL / 2)
-    }
-var requestAnimationFrame = (callback) : number =>
-{
-	return requestAnimationFrameWrapper(callback)
-}
-// https://stackoverflow.com/questions/46025487/create-extendable-enums-for-use-in-extendable-interfaces
-type GameStateEnum<T extends string> = {[K in T]: K};
-// create an enum from given values
-function makeEnum<T extends string>(...vals: T[]): GameStateEnum<T> {
-    const ret = {} as GameStateEnum<T>;
-    vals.forEach(k => ret[k] = k)
-    return ret;
-}
-  
-  // take an existing enum and extend it with more values
-function extendEnum<T extends string, U extends string>(
-    firstEnum: GameStateEnum<T>, ...vals: U[]): GameStateEnum<T | U>
-{
-    return (<any>Object).assign(makeEnum(...vals), firstEnum) as any;  
-}
-const GameState = makeEnum("title", "game");
-type GameState = typeof GameState;
+/**
+ * Handles the core game loop. Subclass this to kick off your game.
+ * Runs updating all the actors, refreshing the display, transitioning between
+ * the title and the game, and tracking scores.
+ * 
+ * ```
+ * class MyGame extends Game
+ * {
+ *     // when the game starts, spawn a new player
+ *     onBeginGame()
+ *     {
+ *         p = new Player();
+ *     }
+ *     // every 20 frames, while the game is playing, spawn an enemy
+ *     update()
+ *     {
+ *         if(this.currentState == "game" && this.ticks%20 == 0)
+ *         {
+ *             let e = new Enemy();
+ *         }
+ *     }
+ * } 
+ * ```
+ */
 
 class Game
 {
@@ -47,9 +42,14 @@ class Game
     private previousTime : number = 0;
     private delta : number = 0;
     public score : number = 0;
-    public lastScore : number = -1;
-    public highScore : number = -1;
-    public ticks : number = 0;
+    protected lastScore : number = -1;
+    protected highScore : number = -1;
+    private _ticks : number = 0;
+    /** number of frames that has elapsed since the game started */
+    public get ticks() : number
+    {
+        return this._ticks;
+    }
     currentState = GameState.title;
     static animationFrameIdentifier : number;
     public get gameOver() { return this.currentState!=GameState.game; }
@@ -70,9 +70,31 @@ class Game
         Keyboard.initialize();
         Mouse.initialize();
         this.transitionToTitle();
-        Game.animationFrameIdentifier = requestAnimationFrame((time) => {this.updateFrame(time)});
+        Game.animationFrameIdentifier = Game.requestAnimationFrame((time) => {this.updateFrame(time)});
     }
-    transitionToTitle()
+    endGame()
+    {
+        this.lastScore = this.score;
+        if(this.lastScore > 0 && this.lastScore > this.highScore)
+        {
+            this.highScore = this.lastScore;
+            window.localStorage.setItem(Config.saveName, this.highScore.toString());
+        }
+        this.transitionToTitle();
+        this.currentState = GameState.title;
+        this.onEndGame();
+    }
+    protected onBeginGame(){}
+    protected onEndGame(){}
+    protected update() {}
+    protected updateTitle()
+    {
+        if(Keyboard.keyDown[Keyboard.SPACE])
+        {
+            this.transitionToGame();
+        }
+    }
+    private transitionToTitle()
     {
         let ty = (Config.title.length == 1)?.2:.15;
         new TextActor(Config.title).setPosition(new Vector(.5, ty)).setDurationForever().scale = new Vector(2,2);
@@ -94,37 +116,14 @@ class Game
             }
         }
     }
-    endGame()
-    {
-        this.lastScore = this.score;
-        if(this.lastScore > 0 && this.lastScore > this.highScore)
-        {
-            this.highScore = this.lastScore;
-            window.localStorage.setItem(Config.saveName, this.highScore.toString());
-        }
-        this.transitionToTitle();
-        this.currentState = GameState.title;
-        this.onEndGame();
-    }
-    transitionToGame()
+    private transitionToGame()
     {
         this.currentState = GameState.game;
         this.score = 0;
         Actor.clear();
         this.onBeginGame();
     }
-    // override
-    onBeginGame(){}
-    onEndGame(){}
-    update() {}
-    updateTitle()
-    {
-        if(Keyboard.keyDown[Keyboard.SPACE])
-        {
-            this.transitionToGame();
-        }
-    }
-    preUpdateFrame(time : any)
+    private preUpdateFrame(time : any)
     :boolean
     {
         if(time)
@@ -141,17 +140,17 @@ class Game
         {
             return true;
         }
-        Game.animationFrameIdentifier = requestAnimationFrame((time) => {this.updateFrame(time)});
+        Game.animationFrameIdentifier = Game.requestAnimationFrame((time) => {this.updateFrame(time)});
         return false;
     }
-    updateFrame(time : any)
+    private updateFrame(time : any)
     {
         if(!this.preUpdateFrame(time))
         {
             return;
         }
         Game.display.preUpdate();
-        this.ticks++;
+        this._ticks++;
         this.update();
         Actor.update();
         if(this.currentState == GameState.title)
@@ -161,11 +160,24 @@ class Game
         Game.display.drawText(`SCORE: ${this.score}`, 1,0,1);
         this.postUpdateFrame();
     }
-    postUpdateFrame()
+    private postUpdateFrame()
     {
         this.delta = 0;
-        Game.animationFrameIdentifier = requestAnimationFrame((time) => {this.updateFrame(time)});
+        Game.animationFrameIdentifier = Game.requestAnimationFrame((time) => {this.updateFrame(time)});
     }
+    private static requestAnimationFrameWrapper =
+	window.requestAnimationFrame	   ||
+	window.webkitRequestAnimationFrame ||
+    function(callback)
+    : number
+    {
+        return window.setTimeout(callback, Game.INTERVAL / 2)
+    }
+    private static requestAnimationFrame = (callback) : number =>
+    {
+        return Game.requestAnimationFrameWrapper(callback)
+    }
+
 }
 
 export { Game };
