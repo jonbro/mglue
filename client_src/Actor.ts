@@ -42,22 +42,21 @@ import { Vector } from "./Vector";
 export class Actor
 {
     private static groups : ActorGroup[] = [];
-    position : Vector;
+    position : Vector = new Vector(0,0);
     velocity : Vector = new Vector(0,0);
     rotation : number = 0;
-    scale : Vector;
-    drawing : Drawing;
+    scale : Vector = new Vector(1,1);
+    /** Default drawing for the actor. This drawing is automatically added to the game during update. */
+    drawing : Drawing = new Drawing();
     isDestroying : boolean = false;
     /** Number of frames the actor has been alive for. */
     age : number = 0;
+    /** group this actor belongs to */
     group : ActorGroup;
     /** Number of actors in the game. */
     static totalCount : number = 0;
     constructor(...args: any[])
     {
-        this.drawing = new Drawing();
-        this.position = new Vector(0,0);
-        this.scale = new Vector(1,1);
         let className = this.constructor['name'];
         let group;
         for (let i = 0; i < Actor.groups.length; i++) {
@@ -164,11 +163,9 @@ export class Actor
         return [];
     }
     setDisplayPriority(displayPriority:number)
-    : Actor
     {
         this.group.displayPriority = displayPriority;
         Actor.sortGroups();
-        return this;
     }
     static sortGroups()
     {

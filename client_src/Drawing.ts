@@ -165,7 +165,10 @@ class DrawingRect
 
 class Drawing
 {
-    static RectParam = class {
+    /**
+     * Internal class for tracking the last type of rectangle which was added to a drawing
+     */
+    private static RectParam = class {
         constructor(public type : string, public width : number, public height : number, public offsetX : number, public offsetY : number, public angle : number=0) {}
     }
     position : Vector = new Vector(0,0);

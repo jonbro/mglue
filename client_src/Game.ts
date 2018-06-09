@@ -36,7 +36,8 @@ import "./Extensions";
 
 class Game
 {
-    public static INTERVAL : number;
+    private static INTERVAL : number;
+    // this should be read only
     public static display: DisplayInterface;
     private currentTime : number = 0;
     private previousTime : number = 0;
@@ -51,7 +52,7 @@ class Game
         return this._ticks;
     }
     currentState = GameState.title;
-    static animationFrameIdentifier : number;
+    private static animationFrameIdentifier : number;
     public get gameOver() { return this.currentState!=GameState.game; }
     constructor(display : DisplayInterface = new Display())
     {

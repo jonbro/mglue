@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>MGLUE DOCS</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/highlight.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+</head>
+<body>
+  <div id="toc">
+    <h5>MGLUE</h5>
+    {{#classes}}
+    <b>{{name}}</b>
+    <ul>
+      {{#children}}
+      <li>{{name}}</li>
+      {{/children}}
+    </ul>
+    {{/classes}}
+  </div>
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div id="content">
+    {{#classes}}
+      <h5>{{name}}</h5>
+      <div class="lead">
+        <p>{{comment.shortText}}</p>
+      </div>
+      {{{comment.text}}}
+      {{#children}}
+        <p>
+          <div class="signature"><b>{{name}}</b>{{{signature}}}</div>
+          {{comment.shortText}}
+          {{{comment.text}}}
+        </p>        
+      {{/children}}
+    {{/classes}}
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
