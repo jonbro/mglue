@@ -42,19 +42,32 @@ import { Vector } from "./Vector";
 export class Actor
 {
     private static groups : ActorGroup[] = [];
+    
+    /** Current position of the actor. Used for both drawing and overlap checks. */
     position : Vector = new Vector(0,0);
+    
+    /** How fast the actor is moving. This value is added to the actors position every update loop. */
     velocity : Vector = new Vector(0,0);
+    
+    /** Rotation of the actor in degrees. */
     rotation : number = 0;
+    
     scale : Vector = new Vector(1,1);
+
     /** Default drawing for the actor. This drawing is automatically added to the game during update. */
     drawing : Drawing = new Drawing();
+    
     isDestroying : boolean = false;
+    
     /** Number of frames the actor has been alive for. */
     age : number = 0;
+    
     /** group this actor belongs to */
     group : ActorGroup;
+    
     /** Number of actors in the game. */
     static totalCount : number = 0;
+    
     constructor(...args: any[])
     {
         let className = this.constructor['name'];
@@ -71,8 +84,7 @@ export class Actor
         {
             group = new ActorGroup(className);
             Actor.groups.push(group);
-            // Actor.sortGroups();
-            // this.initialize()
+            this.initialize();
         }
         group.members.push(this);
         this.group = group;
@@ -94,9 +106,28 @@ export class Actor
     {
         
     }
+    /** Override this function, it will be called every frame while the actor is in the game. */
     update()
     {
 
+    }
+    /**
+     * Adds a vector value to all actors within a class, or a group of classes. Can be used to simulate camera type effects.
+     * 
+     * @param targetClass an array of actor classes, or a single actor class
+     */
+    static scroll(targetClass : Array<Actor> | Actor, offset:Vector)
+    {
+        let t = [targetClass];
+        if(targetClass instanceof Array)
+        {
+            t = targetClass;
+        }
+        t.forEach(c => {
+            Actor.getGroup(c).forEach(a =>{
+                a.position.add(offset);
+            });
+        });
     }
     setPosition(p : Vector)
     : Actor

@@ -12,11 +12,13 @@ class Leaderboard
     static playerId : number;
     static scores : LeaderboardScore[];
     static lastScore : number = 0;
-    static init()
+    static urlRoot : string = "";
+    static init(url : string)
     {
+        Leaderboard.urlRoot = url;
         var playerIdStorage = localStorage.getItem(Leaderboard.playerIdKey);
         if (playerIdStorage == null) {
-            window.fetch('https://worm-drive.glitch.me/api/nextPlayerId').
+            window.fetch(Leaderboard.urlRoot + '/api/nextPlayerId').
                 then(function (result) { return result.json(); }).
                 then(function (json) {
                     Leaderboard.playerId = json.id;
@@ -33,7 +35,7 @@ class Leaderboard
             Leaderboard.scores = null;
             return;
         }
-        var uri = 'https://worm-drive.glitch.me/api/score';
+        var uri = Leaderboard.urlRoot + '/api/score';
         if (isGettingLast) {
             uri += "?score=" + Leaderboard.lastScore + "&count=9";
         }
@@ -62,7 +64,7 @@ class Leaderboard
     static set(score:number)
     {
         Leaderboard.lastScore = score;
-        window.fetch("https://worm-drive.glitch.me/api/key?playerId=" + Leaderboard.playerId).
+        window.fetch(Leaderboard.urlRoot+"/api/key?playerId=" + Leaderboard.playerId).
             then(function (result) { return result.json(); }).
             then(function (json) {
                 let key = json.key;
@@ -75,7 +77,7 @@ class Leaderboard
                         score: score
                     }
                 }));
-                window.fetch('https://worm-drive.glitch.me/api/score', {
+                window.fetch(Leaderboard.urlRoot + '/api/score', {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({

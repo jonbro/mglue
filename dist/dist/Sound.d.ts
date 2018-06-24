@@ -1,0 +1,42 @@
+import { Random } from "./Random";
+export declare class Sound {
+    static ctx: AudioContext;
+    static gainNode: GainNode;
+    static enabled: boolean;
+    static sounds: Sound[];
+    static scheduleInterval: number;
+    static playInterval: number;
+    static quantize: 0.5;
+    static drumParameters: any;
+    static drumPatterns: any;
+    static random: Random;
+    private oneShot;
+    private scheduledTime;
+    private patternInterval;
+    private patternIndex;
+    private pattern;
+    private buffer;
+    private volume;
+    private playedTime;
+    private isPlayingLoop;
+    constructor();
+    static initialize(): void;
+    static setSeed(seed: number): void;
+    static update(): void;
+    private static clear();
+    protected static initDrumParams(): void;
+    protected static initDrumPatterns(): void;
+    static generateParams(seed: any, params: any, mixRatio?: number): any;
+    static generateDrumParams(seed?: number): any;
+    static generateDrumPattern(seed?: number): string;
+    private calculateNextScheduledTime();
+    private playAt(time);
+    private update(currentTime, nextTime);
+    setFromParams(params: any): this;
+    setPattern(pattern: any, patternInterval?: number): this;
+    playNow(): void;
+    /** schedules the sound to play at the next quantized time */
+    play(): this;
+    playPattern(): this;
+    remove(): void;
+}

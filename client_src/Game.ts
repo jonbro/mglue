@@ -33,19 +33,31 @@ import "./Extensions";
  * } 
  * ```
  */
-
+var INTERVAL;
 class Game
 {
-    private static INTERVAL : number;
+    
+    //** ms per frame */
+    private static _INTERVAL : number;
+
+    //** ms per frame */
+    public static get INTERVAL() { return Game._INTERVAL; }
+
     // this should be read only
     public static display: DisplayInterface;
     private currentTime : number = 0;
     private previousTime : number = 0;
     private delta : number = 0;
     public score : number = 0;
+    protected leaderboardEnabled : boolean = false;
     protected lastScore : number = -1;
     protected highScore : number = -1;
     private _ticks : number = 0;
+    /** actor used to display the leaderboard */
+    protected leaderboardText : TextActor = new TextActor("");
+    /** helper strings for ordinals */
+    private rankStrings : string[] = ['ST', 'ND', 'RD'];
+
     /** number of frames that has elapsed since the game started */
     public get ticks() : number
     {
@@ -65,13 +77,29 @@ class Game
         {
             this.highScore = Number(window.localStorage.getItem(Config.saveName));
         }
-        Game.INTERVAL = 1000/Config.fps;
+        Game._INTERVAL = 1000/Config.fps;
+        INTERVAL = Game._INTERVAL;
         Game.display = display;
         Display.element.focus();
         Keyboard.initialize();
         Mouse.initialize();
         this.transitionToTitle();
         Game.animationFrameIdentifier = Game.requestAnimationFrame((time) => {this.updateFrame(time)});
+    }
+
+    /** Helper function to run the game after the window loads, or if the window is ready, immediately */
+    static runOnReady(fn : Function)
+    {
+        if(document.readyState == "complete")
+        {
+            fn();
+        }
+        else
+        {
+            window.addEventListener('load', function() {
+                fn();
+            }, true);
+        }
     }
     endGame()
     {
@@ -94,6 +122,74 @@ class Game
         {
             this.transitionToGame();
         }
+        if(this.leaderboardEnabled)
+        {
+            this.updateLeaderboard();
+        }
+    }
+    protected updateLeaderboard()
+    {
+        let leaderboardType =Math.floor(this.ticks/180)%4;
+        if(this.ticks%180 == 0)
+        {
+            switch(leaderboardType)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Leaderboard.get(true);
+                    break;
+                case 2:
+                    Leaderboard.get(false, true)
+                    break;
+                case 3:
+                    Leaderboard.get();
+                    break;
+            }
+            Leaderboard.get();
+        }
+        if(Leaderboard.scores == null || leaderboardType == 0)
+        {
+            return;
+        }
+        let count = 0;
+        let startPosition = 0.2;
+        this.leaderboardText.color = Color.white;
+        var leaderboardTypes = ['LAST', 'BEST', 'TOP'];
+
+        this.leaderboardText.displayString = leaderboardTypes[leaderboardType-1];
+        this.leaderboardText.setPosition(new Vector(0.5, startPosition));
+        this.leaderboardText.update();
+        startPosition += 0.035;
+        Leaderboard.scores.forEach(score => {
+            if(Leaderboard.playerId == score.playerId)
+            {
+                this.leaderboardText.color = Color.lightgreen;
+                this.leaderboardText.xAlign = 1;
+                this.leaderboardText.setPosition(new Vector(0.2,count*0.03+startPosition));
+                this.leaderboardText.displayString = "YOU";
+                this.leaderboardText.update();
+                }
+            else
+            {
+                this.leaderboardText.color = Color.white;
+            }
+
+            this.leaderboardText.xAlign = 1;
+            this.leaderboardText.setPosition(new Vector(0.4,count*0.03+startPosition));
+            if(score.rank != null)
+            {
+                let rs = "" + (score.rank + 1) + ((score.rank < 3) ? this.rankStrings[score.rank] : 'TH');
+                this.leaderboardText.displayString = rs;
+                this.leaderboardText.update();
+            }
+
+            this.leaderboardText.xAlign = -1;
+            this.leaderboardText.setPosition(new Vector(0.6,count*0.03+startPosition));
+            this.leaderboardText.displayString = score.score.toString();
+            this.leaderboardText.update();
+            count++;
+        });
     }
     private transitionToTitle()
     {
@@ -117,6 +213,11 @@ class Game
             }
         }
     }
+    public enableLeaderboard(leaderboardUrl : string = "")
+    {
+        Leaderboard.init(leaderboardUrl);
+        this.leaderboardEnabled = true;
+    }
     private transitionToGame()
     {
         this.currentState = GameState.game;
@@ -135,7 +236,7 @@ class Game
         {
             this.currentTime = new Date().getTime();
         }
-        this.delta += (this.currentTime - this.previousTime) / Game.INTERVAL;
+        this.delta += (this.currentTime - this.previousTime) / Game._INTERVAL;
         this.previousTime = this.currentTime;
         if(this.delta >= 0.75)
         {
@@ -150,6 +251,7 @@ class Game
         {
             return;
         }
+        // if the player has pressed c, then kick off capturing
         Game.display.preUpdate();
         this._ticks++;
         this.update();
@@ -159,6 +261,17 @@ class Game
             this.updateTitle();
         }
         Game.display.drawText(`SCORE: ${this.score}`, 1,0,1);
+        if(Keyboard.keyDown[67])
+        {
+            Game.display.beginCapture(3, 0.01667, 0.65);
+        }    
+        if(Game.display.isCapturing)
+        {
+            if(Game.display.capture())
+            {
+                Game.display.endCapture();
+            }
+        }
         this.postUpdateFrame();
     }
     private postUpdateFrame()
@@ -166,19 +279,21 @@ class Game
         this.delta = 0;
         Game.animationFrameIdentifier = Game.requestAnimationFrame((time) => {this.updateFrame(time)});
     }
-    private static requestAnimationFrameWrapper =
-	window.requestAnimationFrame	   ||
-	window.webkitRequestAnimationFrame ||
-    function(callback)
-    : number
-    {
-        return window.setTimeout(callback, Game.INTERVAL / 2)
-    }
     private static requestAnimationFrame = (callback) : number =>
     {
-        return Game.requestAnimationFrameWrapper(callback)
+        return requestAnimationFrameWrapper(callback)
     }
 
+}
+
+
+var requestAnimationFrameWrapper =
+window.requestAnimationFrame	   ||
+window.webkitRequestAnimationFrame ||
+function(callback)
+: number
+{
+    return window.setTimeout(callback, INTERVAL / 2)
 }
 
 export { Game };

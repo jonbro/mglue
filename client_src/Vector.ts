@@ -102,4 +102,15 @@ export class Vector
         this.y = tx * Math.sin(radians) + this.y * Math.cos(radians); 
         return this;
     }
+    /** Returns a copy of this vector */
+    copy()
+    :Vector
+    {
+        return new Vector(this.x, this.y);
+    }
+    onScreen()
+    : boolean
+    {
+        return this.x >= 0 && this.x <= 1 && this.y >= 0 && this.y <= 1;
+    }
 }

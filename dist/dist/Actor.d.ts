@@ -39,14 +39,19 @@ import { Vector } from "./Vector";
  */
 export declare class Actor {
     private static groups;
+    /** Current position of the actor. Used for both drawing and overlap checks. */
     position: Vector;
+    /** How fast the actor is moving. This value is added to the actors position every update loop. */
     velocity: Vector;
+    /** Rotation of the actor in degrees. */
     rotation: number;
     scale: Vector;
+    /** Default drawing for the actor. This drawing is automatically added to the game during update. */
     drawing: Drawing;
     isDestroying: boolean;
     /** Number of frames the actor has been alive for. */
     age: number;
+    /** group this actor belongs to */
     group: ActorGroup;
     /** Number of actors in the game. */
     static totalCount: number;
@@ -55,7 +60,14 @@ export declare class Actor {
     /** Mark this actor to be removed from the game at the end of the current update loop. */
     destroy(): void;
     protected begin(...args: any[]): void;
+    /** Override this function, it will be called every frame while the actor is in the game. */
     update(): void;
+    /**
+     * Adds a vector value to all actors within a class, or a group of classes. Can be used to simulate camera type effects.
+     *
+     * @param targetClass an array of actor classes, or a single actor class
+     */
+    static scroll(targetClass: Array<Actor> | Actor, offset: Vector): void;
     setPosition(p: Vector): Actor;
     setVelocity(velocity: Vector): Actor;
     lateUpdate(): void;
@@ -63,7 +75,7 @@ export declare class Actor {
     static update(): void;
     static clear(): void;
     static getGroup(targetClass: any): Actor[];
-    setDisplayPriority(displayPriority: number): Actor;
+    setDisplayPriority(displayPriority: number): void;
     static sortGroups(): void;
 }
 export declare class TextActor extends Actor {

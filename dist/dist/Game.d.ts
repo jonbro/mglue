@@ -1,56 +1,42 @@
 import { DisplayInterface } from "./Display";
+import { TextActor } from "./Actor";
 import "./Extensions";
-/**
- * Handles the core game loop. Subclass this to kick off your game.
- * Runs updating all the actors, refreshing the display, transitioning between
- * the title and the game, and tracking scores.
- *
- * ```
- * class MyGame extends Game
- * {
- *     // when the game starts, spawn a new player
- *     onBeginGame()
- *     {
- *         p = new Player();
- *     }
- *     // every 20 frames, while the game is playing, spawn an enemy
- *     update()
- *     {
- *         if(this.currentState == "game" && this.ticks%20 == 0)
- *         {
- *             let e = new Enemy();
- *         }
- *     }
- * }
- * ```
- */
 declare class Game {
-    static INTERVAL: number;
+    private static _INTERVAL;
+    static readonly INTERVAL: number;
     static display: DisplayInterface;
     private currentTime;
     private previousTime;
     private delta;
     score: number;
+    protected leaderboardEnabled: boolean;
     protected lastScore: number;
     protected highScore: number;
     private _ticks;
+    /** actor used to display the leaderboard */
+    protected leaderboardText: TextActor;
+    /** helper strings for ordinals */
+    private rankStrings;
     /** number of frames that has elapsed since the game started */
     readonly ticks: number;
     currentState: string;
-    static animationFrameIdentifier: number;
+    private static animationFrameIdentifier;
     readonly gameOver: boolean;
     constructor(display?: DisplayInterface);
+    /** Helper function to run the game after the window loads, or if the window is ready, immediately */
+    static runOnReady(fn: Function): void;
     endGame(): void;
     protected onBeginGame(): void;
     protected onEndGame(): void;
     protected update(): void;
     protected updateTitle(): void;
+    protected updateLeaderboard(): void;
     private transitionToTitle();
+    enableLeaderboard(leaderboardUrl?: string): void;
     private transitionToGame();
     private preUpdateFrame(time);
     private updateFrame(time);
     private postUpdateFrame();
-    private static requestAnimationFrameWrapper;
     private static requestAnimationFrame;
 }
 export { Game };

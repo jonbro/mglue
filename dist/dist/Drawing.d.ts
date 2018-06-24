@@ -12,16 +12,10 @@ declare class TextDrawer {
     setSize(size: Vector): void;
 }
 declare class Drawing {
-    static RectParam: {
-        new (type: string, width: number, height: number, offsetX: number, offsetY: number, angle?: number): {
-            type: string;
-            width: number;
-            height: number;
-            offsetX: number;
-            offsetY: number;
-            angle: number;
-        };
-    };
+    /**
+     * Internal class for tracking the last type of rectangle which was added to a drawing
+     */
+    private static RectParam;
     position: Vector;
     rotation: number;
     scale: Vector;

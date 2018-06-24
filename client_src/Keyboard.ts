@@ -18,6 +18,10 @@ export class Keyboard
             Display.element.onkeydown = (e) =>
             {
                 Keyboard.keyDown[e.keyCode] = true;
+                if(e.keyCode == 67)
+                {
+                    e.preventDefault();
+                }
                 if(e.keyCode >= 37 && e.keyCode <= 40)
                 {
                     e.preventDefault();

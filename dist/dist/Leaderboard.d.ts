@@ -9,7 +9,8 @@ declare class Leaderboard {
     static playerId: number;
     static scores: LeaderboardScore[];
     static lastScore: number;
-    static init(): void;
+    static urlRoot: string;
+    static init(url: string): void;
     static get(isGettingLast?: boolean, isGettingBest?: boolean): void;
     static set(score: number): void;
 }
