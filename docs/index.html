@@ -37,15 +37,21 @@
       <li>currentState</li>
       <li>highScore</li>
       <li>lastScore</li>
+      <li>leaderboardEnabled</li>
+      <li>leaderboardText</li>
       <li>score</li>
       <li>display</li>
       <li>gameOver</li>
       <li>ticks</li>
+      <li>INTERVAL</li>
+      <li>enableLeaderboard</li>
       <li>endGame</li>
       <li>onBeginGame</li>
       <li>onEndGame</li>
       <li>update</li>
+      <li>updateLeaderboard</li>
       <li>updateTitle</li>
+      <li>runOnReady</li>
     </ul>
     <b>Actor</b>
     <ul>
@@ -70,6 +76,7 @@
       <li>update</li>
       <li>clear</li>
       <li>getGroup</li>
+      <li>scroll</li>
       <li>sortGroups</li>
       <li>update</li>
     </ul>
@@ -100,6 +107,22 @@
       <li>setRotation</li>
       <li>updateState</li>
     </ul>
+    <b>Sound</b>
+    <ul>
+      <li>constructor</li>
+      <li>play</li>
+      <li>playNow</li>
+      <li>playPattern</li>
+      <li>remove</li>
+      <li>setFromParams</li>
+      <li>setPattern</li>
+      <li>generateDrumParams</li>
+      <li>generateDrumPattern</li>
+      <li>generateParams</li>
+      <li>initialize</li>
+      <li>setSeed</li>
+      <li>update</li>
+    </ul>
     <b>Vector</b>
     <ul>
       <li>constructor</li>
@@ -107,11 +130,13 @@
       <li>y</li>
       <li>add</li>
       <li>addDirection</li>
+      <li>copy</li>
       <li>directionTo</li>
       <li>divide</li>
       <li>length</li>
       <li>multiply</li>
       <li>normalize</li>
+      <li>onScreen</li>
       <li>rotate</li>
       <li>rotation</li>
       <li>set</li>
@@ -124,27 +149,9 @@
   <div id="content">
       <h5>Game</h5>
       <div class="lead">
-        <p>Handles the core game loop. Subclass this to kick off your game.
-Runs updating all the actors, refreshing the display, transitioning between
-the title and the game, and tracking scores.</p>
+        <p></p>
       </div>
-      <pre><code><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyGame</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Game</span></span>
-{
-    <span class="hljs-comment">// when the game starts, spawn a new player</span>
-    onBeginGame()
-    {
-        p = <span class="hljs-keyword">new</span> <span class="hljs-type">Player</span>();
-    }
-    <span class="hljs-comment">// every 20 frames, while the game is playing, spawn an enemy</span>
-    update()
-    {
-        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.currentState == <span class="hljs-string">"game"</span> &amp;&amp; <span class="hljs-keyword">this</span>.ticks%<span class="hljs-number">20</span> == <span class="hljs-number">0</span>)
-        {
-            let e = <span class="hljs-keyword">new</span> <span class="hljs-type">Enemy</span>();
-        }
-    }
-}
-</code></pre>
+      
         <p>
           <div class="signature"><b>constructor</b></div>
           
@@ -163,6 +170,16 @@ the title and the game, and tracking scores.</p>
         <p>
           <div class="signature"><b>lastScore</b>: <span class='type'>number</span> = <span class='default_value'> -1</span></div>
           
+          
+        </p>        
+        <p>
+          <div class="signature"><b>leaderboardEnabled</b>: <span class='type'>boolean</span> = <span class='default_value'>false</span></div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>leaderboardText</b>: <span class='type'>TextActor</span> = <span class='default_value'> new TextActor("")</span></div>
+          actor used to display the leaderboard
           
         </p>        
         <p>
@@ -186,6 +203,16 @@ the title and the game, and tracking scores.</p>
           
         </p>        
         <p>
+          <div class="signature"><b>INTERVAL</b></div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>enableLeaderboard</b>(leaderboardUrl: string)</div>
+          
+          
+        </p>        
+        <p>
           <div class="signature"><b>endGame</b>()</div>
           
           
@@ -206,8 +233,18 @@ the title and the game, and tracking scores.</p>
           
         </p>        
         <p>
+          <div class="signature"><b>updateLeaderboard</b>()</div>
+          
+          
+        </p>        
+        <p>
           <div class="signature"><b>updateTitle</b>()</div>
           
+          
+        </p>        
+        <p>
+          <div class="signature"><b>runOnReady</b>(fn: Function)</div>
+          Helper function to run the game after the window loads, or if the window is ready, immediately
           
         </p>        
       <h5>Actor</h5>
@@ -270,12 +307,12 @@ make sure to add additional drawings to your actor.</p>
         </p>        
         <p>
           <div class="signature"><b>position</b>: <span class='type'>Vector</span> = <span class='default_value'> new Vector(0,0)</span></div>
-          
+          Current position of the actor. Used for both drawing and overlap checks.
           
         </p>        
         <p>
           <div class="signature"><b>rotation</b>: <span class='type'>number</span> = <span class='default_value'>0</span></div>
-          
+          Rotation of the actor in degrees.
           
         </p>        
         <p>
@@ -285,7 +322,7 @@ make sure to add additional drawings to your actor.</p>
         </p>        
         <p>
           <div class="signature"><b>velocity</b>: <span class='type'>Vector</span> = <span class='default_value'> new Vector(0,0)</span></div>
-          
+          How fast the actor is moving. This value is added to the actors position every update loop.
           
         </p>        
         <p>
@@ -300,12 +337,22 @@ make sure to add additional drawings to your actor.</p>
         </p>        
         <p>
           <div class="signature"><b>checkOverlap</b>(targetClass: any, [handler: Function])</div>
-          
-          
+          Collision handling method.
+          <p>Returns true if an overlap is found.
+Uses the .drawing property on the actor to check for overlaps between quads.
+Call during the Actors update function.</p>
+<pre><code>update()
+{
+     <span class="hljs-keyword">this</span>.checkOverlap(Enemy, <span class="hljs-function"><span class="hljs-params">(e : Enemy)</span>=&gt;</span>{
+          <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"overlapping enemy!"</span>);
+          e.kill();
+     });
+}
+</code></pre>
         </p>        
         <p>
           <div class="signature"><b>destroy</b>()</div>
-          
+          Mark this actor to be removed from the game at the end of the current update loop.
           
         </p>        
         <p>
@@ -335,7 +382,7 @@ make sure to add additional drawings to your actor.</p>
         </p>        
         <p>
           <div class="signature"><b>update</b>()</div>
-          
+          Override this function, it will be called every frame while the actor is in the game.
           
         </p>        
         <p>
@@ -346,6 +393,11 @@ make sure to add additional drawings to your actor.</p>
         <p>
           <div class="signature"><b>getGroup</b>(targetClass: any)</div>
           
+          
+        </p>        
+        <p>
+          <div class="signature"><b>scroll</b>(targetClass, offset: Vector)</div>
+          Adds a vector value to all actors within a class, or a group of classes. Can be used to simulate camera type effects.
           
         </p>        
         <p>
@@ -482,6 +534,77 @@ The main actor groups are tracked by &#x60;Game&#x60; to handle updating, so don
           
           
         </p>        
+      <h5>Sound</h5>
+      <div class="lead">
+        <p></p>
+      </div>
+      
+        <p>
+          <div class="signature"><b>constructor</b></div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>play</b>()</div>
+          schedules the sound to play at the next quantized time
+          
+        </p>        
+        <p>
+          <div class="signature"><b>playNow</b>()</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>playPattern</b>()</div>
+          Plays the sound as a looping pattern.
+Will throw an error if the sound doesn&#x27;t have a pattern defined.
+          
+        </p>        
+        <p>
+          <div class="signature"><b>remove</b>()</div>
+          removes a playing sound from the scheduled sounds.
+          
+        </p>        
+        <p>
+          <div class="signature"><b>setFromParams</b>(params: any)</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>setPattern</b>(pattern: any, patternInterval: number)</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>generateDrumParams</b>(seed: number)</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>generateDrumPattern</b>(seed: number)</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>generateParams</b>(seed: any, params: any, mixRatio: number)</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>initialize</b>()</div>
+          call to set up all static properties
+          
+        </p>        
+        <p>
+          <div class="signature"><b>setSeed</b>(seed: number)</div>
+          Change the seed that is used by the Sound internal Random instance.
+          
+        </p>        
+        <p>
+          <div class="signature"><b>update</b>()</div>
+          call once per frame to update all playing loops, and play sounds that are linked to quantization.
+          
+        </p>        
       <h5>Vector</h5>
       <div class="lead">
         <p></p>
@@ -513,6 +636,11 @@ The main actor groups are tracked by &#x60;Game&#x60; to handle updating, so don
           
         </p>        
         <p>
+          <div class="signature"><b>copy</b>()</div>
+          Returns a copy of this vector
+          
+        </p>        
+        <p>
           <div class="signature"><b>directionTo</b>(other: Vector)</div>
           
           
@@ -534,6 +662,11 @@ The main actor groups are tracked by &#x60;Game&#x60; to handle updating, so don
         </p>        
         <p>
           <div class="signature"><b>normalize</b>()</div>
+          
+          
+        </p>        
+        <p>
+          <div class="signature"><b>onScreen</b>()</div>
           
           
         </p>        

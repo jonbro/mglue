@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -373,13 +373,13 @@ exports.Color = Color;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Color_1 = __webpack_require__(1);
 var Display_1 = __webpack_require__(3);
-var Actor_1 = __webpack_require__(4);
-var Config_1 = __webpack_require__(5);
+var Actor_1 = __webpack_require__(6);
+var Config_1 = __webpack_require__(4);
 var Mouse_1 = __webpack_require__(8);
 var Vector_1 = __webpack_require__(0);
 var Keyboard_1 = __webpack_require__(9);
 var Leaderboard_1 = __webpack_require__(10);
-var GameState_1 = __webpack_require__(18);
+var GameState_1 = __webpack_require__(19);
 __webpack_require__(11);
 /**
  * Handles the core game loop. Subclass this to kick off your game.
@@ -418,6 +418,7 @@ var Game = /** @class */ (function () {
         this.lastScore = -1;
         this.highScore = -1;
         this._ticks = 0;
+        this.saveSupported = false;
         /** actor used to display the leaderboard */
         this.leaderboardText = new Actor_1.TextActor("");
         /** helper strings for ordinals */
@@ -428,8 +429,22 @@ var Game = /** @class */ (function () {
         window.cancelAnimationFrame(Game.animationFrameIdentifier);
         // clean up any straggling actors
         Actor_1.Actor.clear();
-        if (window.localStorage.getItem(Config_1.Config.saveName)) {
-            this.highScore = Number(window.localStorage.getItem(Config_1.Config.saveName));
+        if (Config_1.Config.saveName != "changeMe") {
+            this.saveSupported = true;
+        }
+        else {
+            console.warn("Change Config.saveName to add support for score saving");
+        }
+        if (this.saveSupported) {
+            try {
+                if (window.localStorage.getItem(Config_1.Config.saveName)) {
+                    this.highScore = Number(window.localStorage.getItem(Config_1.Config.saveName));
+                }
+            }
+            catch (error) {
+                this.saveSupported = false;
+                console.log(error);
+            }
         }
         Game._INTERVAL = 1000 / Config_1.Config.fps;
         INTERVAL = Game._INTERVAL;
@@ -474,7 +489,14 @@ var Game = /** @class */ (function () {
         this.lastScore = this.score;
         if (this.lastScore > 0 && this.lastScore > this.highScore) {
             this.highScore = this.lastScore;
-            window.localStorage.setItem(Config_1.Config.saveName, this.highScore.toString());
+            if (this.saveSupported) {
+                try {
+                    window.localStorage.setItem(Config_1.Config.saveName, this.highScore.toString());
+                }
+                catch (_a) {
+                    console.log("failed to write local storage");
+                }
+            }
         }
         this.transitionToTitle();
         this.currentState = GameState_1.GameState.title;
@@ -604,7 +626,7 @@ var Game = /** @class */ (function () {
         }
         Game.display.drawText("SCORE: " + this.score, 1, 0, 1);
         if (Keyboard_1.Keyboard.keyDown[67]) {
-            Game.display.beginCapture(3, 0.01667, 0.65);
+            Game.display.beginCapture(Config_1.Config.captureConfig.duration, Config_1.Config.captureConfig.interval, Config_1.Config.captureConfig.scale);
         }
         if (Game.display.isCapturing) {
             if (Game.display.capture()) {
@@ -640,14 +662,14 @@ var requestAnimationFrameWrapper = window.requestAnimationFrame ||
 Object.defineProperty(exports, "__esModule", { value: true });
 var Color_1 = __webpack_require__(1);
 var Vector_1 = __webpack_require__(0);
-var Config_1 = __webpack_require__(5);
-var Drawing_1 = __webpack_require__(6);
+var Config_1 = __webpack_require__(4);
+var Drawing_1 = __webpack_require__(7);
 var Game_1 = __webpack_require__(2);
 // gif encoding stuff. Its raw js, so we are just doing it raw
-__webpack_require__(13);
 __webpack_require__(14);
 __webpack_require__(15);
 __webpack_require__(16);
+__webpack_require__(17);
 var Display = /** @class */ (function () {
     function Display() {
         this.textDrawer = new Drawing_1.TextDrawer();
@@ -769,6 +791,104 @@ exports.Display = Display;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+var Color_1 = __webpack_require__(1);
+var CaptureConfig = /** @class */ (function () {
+    function CaptureConfig(scale, duration, interval) {
+        if (scale === void 0) { scale = 0.5; }
+        if (duration === void 0) { duration = 3; }
+        if (interval === void 0) { interval = 0.05; }
+        this.scale = scale;
+        this.duration = duration;
+        this.interval = interval;
+    }
+    return CaptureConfig;
+}());
+exports.CaptureConfig = CaptureConfig;
+var Config = /** @class */ (function () {
+    function Config() {
+    }
+    Config.fps = 60;
+    Config.backgroundColor = Color_1.Color.black;
+    Config.soundTempo = 120;
+    Config.soundVolume = 0.02;
+    Config.debugMode = true;
+    Config.title = "GAME TITLE";
+    Config.saveName = "changeMe";
+    Config.isDebuggingMode = false;
+    Config.captureConfig = new CaptureConfig();
+    return Config;
+}());
+exports.Config = Config;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Random = /** @class */ (function () {
+    function Random(seed) {
+        if (seed === void 0) { seed = -0x7fffffff; }
+        this.seed(seed);
+    }
+    Random.prototype.seed = function (seedValue) {
+        if (seedValue === void 0) { seedValue = -0x7fffffff; }
+        if (seedValue == -0x7fffffff) {
+            seedValue = Math.floor(Math.random() * 0x7fffffff);
+        }
+        this.sv = seedValue;
+        this.x = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30));
+        this.y = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30)) + 1;
+        this.z = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30)) + 2;
+        this.w = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30)) + 3;
+        return this;
+    };
+    Random.range = function (low, high) {
+        if (low === void 0) { low = 0; }
+        if (high === void 0) { high = 1; }
+        return this.instance.range(low, high);
+    };
+    Random.rangeInt = function (low, high) {
+        if (low === void 0) { low = 0; }
+        if (high === void 0) { high = 1; }
+        return this.instance.rangeInt(low, high);
+    };
+    Random.value = function () {
+        return this.instance.value();
+    };
+    Random.prototype.range = function (low, high) {
+        if (low === void 0) { low = 0; }
+        if (high === void 0) { high = 1; }
+        return this.value() * (high - low) + low;
+    };
+    Random.prototype.rangeInt = function (low, high) {
+        if (low === void 0) { low = 0; }
+        if (high === void 0) { high = 1; }
+        return Math.floor(this.range(low, high + 1));
+    };
+    Random.prototype.value = function () {
+        var t = this.x ^ (this.x << 11);
+        this.x = this.y;
+        this.y = this.z;
+        this.z = this.w;
+        this.w = (this.w ^ (this.w >> 19)) ^ (t ^ (t >> 8));
+        return this.w / 0x7fffffff;
+    };
+    Random.instance = new Random();
+    return Random;
+}());
+exports.Random = Random;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -782,7 +902,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Color_1 = __webpack_require__(1);
 var Game_1 = __webpack_require__(2);
-var Drawing_1 = __webpack_require__(6);
+var Drawing_1 = __webpack_require__(7);
 var Vector_1 = __webpack_require__(0);
 /**
  * You are going to make your game out of a pile of these.
@@ -905,6 +1025,24 @@ var Actor = /** @class */ (function () {
         this.drawing.draw();
         this.age++;
     };
+    /**
+     * Collision handling method.
+     *
+     * Returns true if an overlap is found.
+     * Uses the .drawing property on the actor to check for overlaps between quads.
+     * Call during the Actors update function.
+     * ```
+     * update()
+     * {
+     *      this.checkOverlap(Enemy, (e : Enemy)=>{
+     *           console.log("overlapping enemy!");
+     *           e.kill();
+     *      });
+     * }
+     * ```
+     * @param targetClass The class of actors to check this actor against.
+     * @param handler callback function if an overlap is found.
+     */
     Actor.prototype.checkOverlap = function (targetClass, handler) {
         var _this = this;
         var res = false;
@@ -1045,31 +1183,7 @@ exports.ActorGroup = ActorGroup;
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Color_1 = __webpack_require__(1);
-var Config = /** @class */ (function () {
-    function Config() {
-    }
-    Config.fps = 60;
-    Config.backgroundColor = Color_1.Color.black;
-    Config.soundTempo = 120;
-    Config.soundVolume = 0.02;
-    Config.debugMode = true;
-    Config.title = "GAME TITLE";
-    Config.saveName = "Wormdrive3hs";
-    Config.isDebuggingMode = false;
-    return Config;
-}());
-exports.Config = Config;
-
-
-/***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1339,67 +1453,6 @@ exports.Drawing = Drawing;
 
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Random = /** @class */ (function () {
-    function Random(seed) {
-        if (seed === void 0) { seed = -0x7fffffff; }
-        this.seed(seed);
-    }
-    Random.prototype.seed = function (seedValue) {
-        if (seedValue === void 0) { seedValue = -0x7fffffff; }
-        if (seedValue == -0x7fffffff) {
-            seedValue = Math.floor(Math.random() * 0x7fffffff);
-        }
-        this.sv = seedValue;
-        this.x = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30));
-        this.y = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30)) + 1;
-        this.z = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30)) + 2;
-        this.w = seedValue = 1812433253 * (seedValue ^ (seedValue >> 30)) + 3;
-        return this;
-    };
-    Random.range = function (low, high) {
-        if (low === void 0) { low = 0; }
-        if (high === void 0) { high = 1; }
-        return this.instance.range(low, high);
-    };
-    Random.rangeInt = function (low, high) {
-        if (low === void 0) { low = 0; }
-        if (high === void 0) { high = 1; }
-        return this.instance.rangeInt(low, high);
-    };
-    Random.value = function () {
-        return this.instance.value();
-    };
-    Random.prototype.range = function (low, high) {
-        if (low === void 0) { low = 0; }
-        if (high === void 0) { high = 1; }
-        return this.value() * (high - low) + low;
-    };
-    Random.prototype.rangeInt = function (low, high) {
-        if (low === void 0) { low = 0; }
-        if (high === void 0) { high = 1; }
-        return Math.floor(this.range(low, high + 1));
-    };
-    Random.prototype.value = function () {
-        var t = this.x ^ (this.x << 11);
-        this.x = this.y;
-        this.y = this.z;
-        this.z = this.w;
-        this.w = (this.w ^ (this.w >> 19)) ^ (t ^ (t >> 8));
-        return this.w / 0x7fffffff;
-    };
-    Random.instance = new Random();
-    return Random;
-}());
-exports.Random = Random;
-
-
-/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1488,7 +1541,7 @@ exports.Keyboard = Keyboard;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var LZString = __webpack_require__(17);
+var LZString = __webpack_require__(18);
 var Leaderboard = /** @class */ (function () {
     function Leaderboard() {
     }
@@ -1606,43 +1659,474 @@ Number.prototype.mod = function (n) {
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
+// NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.
+
+(function(root, factory) {
+	if (typeof module === "object" && typeof module.exports === "object") {
+		module.exports = factory();
+	} else {
+		root.jsfx = factory();
+	}
+}(this, function() {
+	"use strict";
+	var jsfx = {};
+    var audio = __webpack_require__(22);
+	(function () {
+		this.Parameters = []; // will be constructed in the end
+
+		this.Generators = {
+			square : audio.generators.square,
+			saw    : audio.generators.saw,
+			triangle : audio.generators.triangle,
+			sine   : audio.generators.sine,
+			noise  : audio.generators.noise,
+			synth  : audio.generators.synth
+		};
+
+		this.getGeneratorNames = function(){
+			var names = [];
+			for(var e in this.Generators)
+				names.push(e);
+			return names;
+		}
+
+		var nameToParam = function(name){
+			return name.replace(/ /g, "");
+		}
+
+		this.getParameters = function () {
+			var params = [];
+
+			var grp = 0;
+
+			// add param
+			var ap = function (name, min, max, def, step) {
+				if (step === undefined)
+					step = (max - min) / 1000;
+				var param = { name: name, id: nameToParam(name),
+							min: min, max: max, step:step, def: def,
+							type: "range", group: grp};
+				params.push(param);
+			};
+
+			// add option
+			var ao = function(name, options, def){
+				var param = {name: name, id: nameToParam(name),
+							options: options, def: def,
+							type: "option", group: grp };
+				params.push(param);
+			}
+
+			var gens = this.getGeneratorNames();
+			ao("Generator", gens, gens[0]);
+			ap("Super Sampling Quality", 0, 16, 0, 1);
+			ap("Master Volume",  0, 1, 0.4);
+			grp++;
+
+			ap("Attack Time",    0, 1, 0.1); // seconds
+			ap("Sustain Time",   0, 2, 0.3); // seconds
+			ap("Sustain Punch",  0, 3, 2);
+			ap("Decay Time",     0, 2, 1); // seconds
+			grp++;
+
+			ap("Min Frequency",   20, 2400, 0, 1);
+			ap("Start Frequency", 20, 2400, 440, 1);
+			ap("Max Frequency",   20, 2400, 2000, 1);
+			ap("Slide",           -1, 1, 0);
+			ap("Delta Slide",     -1, 1, 0);
+
+			grp++;
+			ap("Vibrato Depth",     0, 1, 0);
+			ap("Vibrato Frequency", 0.01, 48, 8);
+			ap("Vibrato Depth Slide",   -0.3, 1, 0);
+			ap("Vibrato Frequency Slide", -1, 1, 0);
+
+			grp++;
+			ap("Change Amount", -1, 1, 0);
+			ap("Change Speed",  0, 1, 0.1);
+
+			grp++;
+			ap("Square Duty", 0, 0.5, 0);
+			ap("Square Duty Sweep", -1, 1, 0);
+
+			grp++;
+			ap("Repeat Speed", 0, 0.8, 0);
+
+			grp++;
+			ap("Phaser Offset", -1, 1, 0);
+			ap("Phaser Sweep", -1, 1, 0);
+
+			grp++;
+			ap("LP Filter Cutoff", 0, 1, 1);
+			ap("LP Filter Cutoff Sweep", -1, 1, 0);
+			ap("LP Filter Resonance",    0, 1, 0);
+			ap("HP Filter Cutoff",       0, 1, 0);
+			ap("HP Filter Cutoff Sweep", -1, 1, 0);
+
+			return params;
+		};
+
+
+		/**
+		 * Input params object has the same parameters as described above
+		 * except all the spaces have been removed
+		 *
+		 * This returns an array of float values of the generated audio.
+		 *
+		 * To make it into a wave use:
+		 *    data = jsfx.generate(params)
+		 *    audio.make(data)
+		 */
+		this.generate = function(params){
+			// useful consts/functions
+			var TAU = 2 * Math.PI,
+				sin = Math.sin,
+				cos = Math.cos,
+				pow = Math.pow,
+				abs = Math.abs;
+			var SampleRate = audio.SampleRate;
+
+			// super sampling
+			var super_sampling_quality = params.SuperSamplingQuality | 0;
+			if(super_sampling_quality < 1) super_sampling_quality = 1;
+			SampleRate = SampleRate * super_sampling_quality;
+
+			// enveloping initialization
+			var _ss = 1.0 + params.SustainPunch;
+			var envelopes = [ {from: 0.0, to: 1.0, time: params.AttackTime},
+							{from: _ss, to: 1.0, time: params.SustainTime},
+							{from: 1.0, to: 0.0, time: params.DecayTime}];
+			var envelopes_len = envelopes.length;
+
+			// envelope sample calculation
+			for(var i = 0; i < envelopes_len; i++){
+				envelopes[i].samples = 1 + ((envelopes[i].time * SampleRate) | 0);
+			}
+			// envelope loop variables
+			var envelope = undefined;
+			var envelope_cur = 0.0;
+			var envelope_idx = -1;
+			var envelope_increment = 0.0;
+			var envelope_last = -1;
+
+			// count total samples
+			var totalSamples = 0;
+			for(var i = 0; i < envelopes_len; i++){
+				totalSamples += envelopes[i].samples;
+			}
+
+			// fix totalSample limit
+			if( totalSamples < SampleRate / 2){
+				totalSamples = SampleRate / 2;
+			}
+
+			var outSamples = (totalSamples / super_sampling_quality)|0;
+
+			// out data samples
+			var out = new Array(outSamples);
+			var sample = 0;
+			var sample_accumulator = 0;
+
+			// main generator
+			var generator = jsfx.Generators[params.Generator];
+			if (generator === undefined)
+				generator = this.Generators.square;
+			var generator_A = 0;
+			var generator_B = 0;
+
+			// square generator
+			generator_A = params.SquareDuty;
+			var square_slide = params.SquareDutySweep / SampleRate;
+
+			// phase calculation
+			var phase = 0;
+			var phase_speed = params.StartFrequency * TAU / SampleRate;
+
+			// phase slide calculation
+			var phase_slide = 1.0 + pow(params.Slide, 3.0) * 64.0 / SampleRate;
+			var phase_delta_slide = pow(params.DeltaSlide, 3.0) / (SampleRate * 1000);
+			if (super_sampling_quality !== undefined)
+				phase_delta_slide /= super_sampling_quality; // correction
+
+			// frequency limiter
+			if(params.MinFrequency > params.StartFrequency)
+				params.MinFrequency = params.StartFrequency;
+
+			if(params.MaxFrequency < params.StartFrequency)
+				params.MaxFrequency = params.StartFrequency;
+
+			var phase_min_speed = params.MinFrequency * TAU / SampleRate;
+			var phase_max_speed = params.MaxFrequency * TAU / SampleRate;
+
+			// frequency vibrato
+			var vibrato_phase = 0;
+			var vibrato_phase_speed = params.VibratoFrequency * TAU / SampleRate;
+			var vibrato_amplitude = params.VibratoDepth;
+
+			// frequency vibrato slide
+			var vibrato_phase_slide = 1.0 + pow(params.VibratoFrequencySlide, 3.0) * 3.0 / SampleRate;
+			var vibrato_amplitude_slide = params.VibratoDepthSlide / SampleRate;
+
+			// arpeggiator
+			var arpeggiator_time = 0;
+			var arpeggiator_limit = params.ChangeSpeed * SampleRate;
+			var arpeggiator_mod   = pow(params.ChangeAmount, 2);
+			if (params.ChangeAmount > 0)
+				arpeggiator_mod = 1 + arpeggiator_mod * 10;
+			else
+				arpeggiator_mod = 1 - arpeggiator_mod * 0.9;
+
+			// phaser
+			var phaser_max = 1024;
+			var phaser_mask = 1023;
+			var phaser_buffer = new Array(phaser_max);
+			for(var _i = 0; _i < phaser_max; _i++)
+				phaser_buffer[_i] = 0;
+			var phaser_pos = 0;
+			var phaser_offset = pow(params.PhaserOffset, 2.0) * (phaser_max - 4);
+			var phaser_offset_slide = pow(params.PhaserSweep, 3.0) * 4000 / SampleRate;
+			var phaser_enabled = (abs(phaser_offset_slide) > 0.00001) ||
+								(abs(phaser_offset) > 0.00001);
+
+			// lowpass filter
+			var filters_enabled = (params.HPFilterCutoff > 0.001) || (params.LPFilterCutoff < 0.999);
+
+			var lowpass_pos = 0;
+			var lowpass_pos_slide = 0;
+			var lowpass_cutoff = pow(params.LPFilterCutoff, 3.0) / 10;
+			var lowpass_cutoff_slide = 1.0 + params.HPFilterCutoffSweep / 10000;
+			var lowpass_damping = 5.0 / (1.0 + pow(params.LPFilterResonance, 2) * 20 ) *
+										(0.01 + params.LPFilterCutoff);
+			if ( lowpass_damping > 0.8)
+				lowpass_damping = 0.8;
+			lowpass_damping = 1.0 - lowpass_damping;
+			var lowpass_enabled = params.LPFilterCutoff < 0.999;
+
+			// highpass filter
+			var highpass_accumulator = 0;
+			var highpass_cutoff = pow(params.HPFilterCutoff, 2.0) / 10;
+			var highpass_cutoff_slide = 1.0 + params.HPFilterCutoffSweep / 10000;
+
+			// repeat
+			var repeat_time  = 0;
+			var repeat_limit = totalSamples;
+			if (params.RepeatSpeed > 0){
+				repeat_limit = pow(1 - params.RepeatSpeed, 2.0) * SampleRate + 32;
+			}
+
+			// master volume controller
+			var master_volume = params.MasterVolume;
+
+			var k = 0;
+			for(var i = 0; i < totalSamples; i++){
+				// main generator
+				sample = generator(phase, generator_A, generator_B);
+
+				// square generator
+				generator_A += square_slide;
+				if(generator_A < 0.0){
+					generator_A = 0.0;
+				} else if (generator_A > 0.5){
+					generator_A = 0.5;
+				}
+
+				if( repeat_time > repeat_limit ){
+					// phase reset
+					phase = 0;
+					phase_speed = params.StartFrequency * TAU / SampleRate;
+					// phase slide reset
+					phase_slide = 1.0 + pow(params.Slide, 3.0) * 3.0 / SampleRate;
+					phase_delta_slide = pow(params.DeltaSlide, 3.0) / (SampleRate * 1000);
+					if (super_sampling_quality !== undefined)
+						phase_delta_slide /= super_sampling_quality; // correction
+					// arpeggiator reset
+					arpeggiator_time = 0;
+					arpeggiator_limit = params.ChangeSpeed * SampleRate;
+					arpeggiator_mod   = 1 + (params.ChangeAmount | 0) / 12.0;
+					// repeat reset
+					repeat_time = 0;
+				}
+				repeat_time += 1;
+
+				// phase calculation
+				phase += phase_speed;
+
+				// phase slide calculation
+				phase_slide += phase_delta_slide;
+				phase_speed *= phase_slide;
+
+				// arpeggiator
+				if ( arpeggiator_time > arpeggiator_limit ){
+					phase_speed *= arpeggiator_mod;
+					arpeggiator_limit = totalSamples;
+				}
+				arpeggiator_time += 1;
+
+				// frequency limiter
+				if (phase_speed > phase_max_speed){
+					phase_speed = phase_max_speed;
+				} else if(phase_speed < phase_min_speed){
+					phase_speed = phase_min_speed;
+				}
+
+				// frequency vibrato
+				vibrato_phase += vibrato_phase_speed;
+				var _vibrato_phase_mod = phase_speed * sin(vibrato_phase) * vibrato_amplitude;
+				phase += _vibrato_phase_mod;
+
+				// frequency vibrato slide
+				vibrato_phase_speed *= vibrato_phase_slide;
+				if(vibrato_amplitude_slide){
+					vibrato_amplitude += vibrato_amplitude_slide;
+					if(vibrato_amplitude < 0){
+						vibrato_amplitude = 0;
+						vibrato_amplitude_slide = 0;
+					} else if (vibrato_amplitude > 1){
+						vibrato_amplitude = 1;
+						vibrato_amplitude_slide = 0;
+					}
+				}
+
+				// filters
+				if( filters_enabled ){
+
+					if( abs(highpass_cutoff) > 0.001){
+						highpass_cutoff *= highpass_cutoff_slide;
+						if(highpass_cutoff < 0.00001){
+							highpass_cutoff = 0.00001;
+						} else if(highpass_cutoff > 0.1){
+							highpass_cutoff = 0.1;
+						}
+					}
+
+					var _lowpass_pos_old = lowpass_pos;
+					lowpass_cutoff *= lowpass_cutoff_slide;
+					if(lowpass_cutoff < 0.0){
+						lowpass_cutoff = 0.0;
+					} else if ( lowpass_cutoff > 0.1 ){
+						lowpass_cutoff = 0.1;
+					}
+					if(lowpass_enabled){
+						lowpass_pos_slide += (sample - lowpass_pos) * lowpass_cutoff;
+						lowpass_pos_slide *= lowpass_damping;
+					} else {
+						lowpass_pos = sample;
+						lowpass_pos_slide = 0;
+					}
+					lowpass_pos += lowpass_pos_slide;
+
+					highpass_accumulator += lowpass_pos - _lowpass_pos_old;
+					highpass_accumulator *= 1.0 - highpass_cutoff;
+					sample = highpass_accumulator;
+				}
+
+				// phaser
+				if (phaser_enabled) {
+					phaser_offset += phaser_offset_slide;
+					if( phaser_offset < 0){
+						phaser_offset = -phaser_offset;
+						phaser_offset_slide = -phaser_offset_slide;
+					}
+					if( phaser_offset > phaser_mask){
+						phaser_offset = phaser_mask;
+						phaser_offset_slide = 0;
+					}
+
+					phaser_buffer[phaser_pos] = sample;
+					// phaser sample modification
+					var _p = (phaser_pos - (phaser_offset|0) + phaser_max) & phaser_mask;
+					sample += phaser_buffer[_p];
+					phaser_pos = (phaser_pos + 1) & phaser_mask;
+				}
+
+				// envelope processing
+				if( i > envelope_last ){
+					envelope_idx += 1;
+					if(envelope_idx < envelopes_len) // fault protection
+						envelope = envelopes[envelope_idx];
+					else // the trailing envelope is silence
+						envelope = {from: 0, to: 0, samples: totalSamples};
+					envelope_cur = envelope.from;
+					envelope_increment = (envelope.to - envelope.from) / (envelope.samples + 1);
+					envelope_last += envelope.samples;
+				}
+				sample *= envelope_cur;
+				envelope_cur += envelope_increment;
+
+				// master volume controller
+				sample *= master_volume;
+
+				// prepare for next sample
+				if(super_sampling_quality > 1){
+					sample_accumulator += sample;
+					if( (i + 1) % super_sampling_quality === 0){
+						out[k] = sample_accumulator / super_sampling_quality;
+						k += 1;
+						sample_accumulator = 0;
+					}
+				} else {
+					out[i] = sample;
+				}
+			}
+
+			// return out;
+
+			// add padding 10ms
+			var len = (SampleRate / 100)|0;
+			var padding = new Array(len);
+			for(var i = 0; i < len; i++)
+				padding[i] = 0;
+			return padding.concat(out).concat(padding);
+		}
+
+		this.Parameters = this.getParameters();
+
+	}).apply(jsfx);
+	return jsfx;
+}));
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Vector_1 = __webpack_require__(0);
 exports.Vector = Vector_1.Vector;
-var Random_1 = __webpack_require__(7);
+var Random_1 = __webpack_require__(5);
 exports.Random = Random_1.Random;
-var Actor_1 = __webpack_require__(4);
+var Actor_1 = __webpack_require__(6);
 exports.Actor = Actor_1.Actor;
 exports.TextActor = Actor_1.TextActor;
 var Color_1 = __webpack_require__(1);
 exports.Color = Color_1.Color;
 var Display_1 = __webpack_require__(3);
 exports.Display = Display_1.Display;
-var Config_1 = __webpack_require__(5);
+var Config_1 = __webpack_require__(4);
 exports.Config = Config_1.Config;
+exports.CaptureConfig = Config_1.CaptureConfig;
 var Mouse_1 = __webpack_require__(8);
 exports.Mouse = Mouse_1.Mouse;
-var ParticleSystem_1 = __webpack_require__(19);
+var ParticleSystem_1 = __webpack_require__(20);
 exports.ParticleSystem = ParticleSystem_1.ParticleSystem;
 var Keyboard_1 = __webpack_require__(9);
 exports.Keyboard = Keyboard_1.Keyboard;
-var Drawing_1 = __webpack_require__(6);
+var Drawing_1 = __webpack_require__(7);
 exports.Drawing = Drawing_1.Drawing;
 exports.TextDrawer = Drawing_1.TextDrawer;
 var Leaderboard_1 = __webpack_require__(10);
 exports.Leaderboard = Leaderboard_1.Leaderboard;
 var Game_1 = __webpack_require__(2);
 exports.Game = Game_1.Game;
-var Sound_1 = __webpack_require__(20);
+var Sound_1 = __webpack_require__(21);
 exports.Sound = Sound_1.Sound;
 __webpack_require__(11);
 /**/ 
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 /**
@@ -2210,7 +2694,7 @@ GIFEncoder = function() {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 /*
@@ -2745,7 +3229,7 @@ NeuQuant = function() {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 /**
@@ -3028,7 +3512,7 @@ LZWEncoder = function() {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 encode64 = function(input) {
@@ -3052,7 +3536,7 @@ encode64 = function(input) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
@@ -3560,7 +4044,7 @@ if (true) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3592,7 +4076,7 @@ exports.GameState = GameState;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3610,9 +4094,9 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Game_1 = __webpack_require__(2);
 var Color_1 = __webpack_require__(1);
-var Actor_1 = __webpack_require__(4);
+var Actor_1 = __webpack_require__(6);
 var Vector_1 = __webpack_require__(0);
-var Random_1 = __webpack_require__(7);
+var Random_1 = __webpack_require__(5);
 var ParticleSystem = /** @class */ (function () {
     function ParticleSystem() {
         this.count = 1;
@@ -3662,7 +4146,7 @@ var ParticleActor = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3671,10 +4155,10 @@ var ParticleActor = /** @class */ (function (_super) {
  * This is a pretty direct port of the sound class in https://github.com/abagames/mgl.coffee
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(5);
-var Random_1 = __webpack_require__(7);
-var jsfx = __webpack_require__(22);
-var jsfxlib = __webpack_require__(21);
+var Config_1 = __webpack_require__(4);
+var Random_1 = __webpack_require__(5);
+var jsfx = __webpack_require__(12);
+var jsfxlib = __webpack_require__(23);
 var getBufferFromJsfx = function (context, lib) {
     var params = jsfxlib.arrayToParams(lib);
     var data = jsfx.generate(params);
@@ -3694,12 +4178,13 @@ var Sound = /** @class */ (function () {
         Sound.sounds.push(this);
         this.volume = 1;
     }
+    /** call to set up all static properties */
     Sound.initialize = function () {
         try {
-            this.ctx = new AudioContext();
-            this.gainNode = this.ctx.createGain();
+            this.context = new AudioContext();
+            this.gainNode = this.context.createGain();
             this.gainNode.gain.value = Config_1.Config.soundVolume;
-            this.gainNode.connect(this.ctx.destination);
+            this.gainNode.connect(this.context.destination);
             this.enabled = true;
         }
         catch (error) {
@@ -3713,19 +4198,29 @@ var Sound = /** @class */ (function () {
         this.initDrumPatterns();
         this.random = new Random_1.Random();
     };
+    /**
+     * Change the seed that is used by the Sound internal Random instance.
+     * @param seed random seed value
+     */
     Sound.setSeed = function (seed) {
         this.random.seed(seed);
     };
+    /**
+     * call once per frame to update all playing loops, and play sounds that are linked to quantization.
+     */
     Sound.update = function () {
         if (!Sound.enabled) {
             return;
         }
-        var currentTime = Sound.ctx.currentTime;
+        var currentTime = Sound.context.currentTime;
         var nextTime = currentTime + Sound.scheduleInterval;
         this.sounds.forEach(function (sound) {
             sound.update(currentTime, nextTime);
         });
     };
+    /**
+     * stop all playing sounds and loops.
+     */
     Sound.clear = function () {
         this.sounds = [];
     };
@@ -3811,6 +4306,7 @@ var Sound = /** @class */ (function () {
         });
         return gdp;
     };
+    //#region Private Methods
     Sound.prototype.calculateNextScheduledTime = function () {
         // this function steps forward in the pattern, until it finds a 1
         // and updates the scheduledtime with that number.
@@ -3826,11 +4322,16 @@ var Sound = /** @class */ (function () {
         }
     };
     Sound.prototype.playAt = function (time) {
-        var s = Sound.ctx.createBufferSource();
+        var s = Sound.context.createBufferSource();
         s.buffer = this.buffer;
         s.connect(Sound.gainNode);
         s.start(time);
     };
+    /**
+     * internal method to play a quantized sound or play a looping sound
+     * @param currentTime audio context time
+     * @param nextTime next time this update function will be called
+     */
     Sound.prototype.update = function (currentTime, nextTime) {
         if (this.oneShot) {
             this.oneShot = null;
@@ -3857,12 +4358,14 @@ var Sound = /** @class */ (function () {
             this.calculateNextScheduledTime();
         }
     };
+    //#endregion
+    //#region Public Methods
     Sound.prototype.setFromParams = function (params) {
         if (!Sound.enabled) {
             return this;
         }
         params[2] *= this.volume;
-        this.buffer = getBufferFromJsfx(Sound.ctx, params);
+        this.buffer = getBufferFromJsfx(Sound.context, params);
         return this;
     };
     Sound.prototype.setPattern = function (pattern, patternInterval) {
@@ -3874,16 +4377,25 @@ var Sound = /** @class */ (function () {
     Sound.prototype.playNow = function () {
         this.playAt(0);
     };
-    /** schedules the sound to play at the next quantized time */
+    /**
+     * schedules the sound to play at the next quantized time
+     * */
     Sound.prototype.play = function () {
         this.oneShot = true;
         return this;
     };
+    /**
+     * Plays the sound as a looping pattern.
+     * Will throw an error if the sound doesn't have a pattern defined.
+     */
     Sound.prototype.playPattern = function () {
         this.isPlayingLoop = true;
         this.scheduledTime = null;
         return this;
     };
+    /**
+     * removes a playing sound from the scheduled sounds.
+     */
     Sound.prototype.remove = function () {
         var i = Sound.sounds.indexOf(this);
         if (i > -1) {
@@ -3897,505 +4409,7 @@ exports.Sound = Sound;
 
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.
-
-(function(root, factory) {
-	if (typeof module === "object" && typeof module.exports === "object") {
-		module.exports = factory();
-	} else {
-		root.jsfxlib = factory();
-	}
-}(this, function() {
-    "use strict";
-    var jsfx = __webpack_require__(22);
-var jsfxlib = {};
-(function () {
-    // takes object with param arrays
-    // audiolib = {
-    //   Sound : ["sine", 1, 2, 4, 1...
-    // }
-    //
-    // returns object with audio samples
-    // p.Sound.play()
-    this.createWaves = function(lib){
-        var sounds = {};
-        for (var e in lib) {
-            var data = lib[e];
-            sounds[e] = this.createWave(data);
-        }
-        return sounds;
-    }
-
-    /* Create a single sound:
-       var p = jsfxlib.createWave(["sine", 1,2,3, etc.]);
-       p.play();
-   */
-    this.createWave = function(lib) {
-        var params = this.arrayToParams(lib),
-            data = jsfx.generate(params),
-            wave = audio.make(data);
-
-        return wave;
-    }
-
-    this.paramsToArray = function(params){
-        var pararr = [];
-        var len = jsfx.Parameters.length;
-        for(var i = 0; i < len; i++){
-            pararr.push(params[jsfx.Parameters[i].id]);
-        }
-        return pararr;
-    }
-
-    this.arrayToParams = function(pararr){
-        var params = {};
-        var len = jsfx.Parameters.length;
-        for(var i = 0; i < len; i++){
-            params[jsfx.Parameters[i].id] = pararr[i];
-        }
-        return params;
-    }
-}).apply(jsfxlib);
-return jsfxlib;
-}));
-
-/***/ }),
 /* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.
-
-(function(root, factory) {
-	if (typeof module === "object" && typeof module.exports === "object") {
-		module.exports = factory();
-	} else {
-		root.jsfx = factory();
-	}
-}(this, function() {
-	"use strict";
-	var jsfx = {};
-    var audio = __webpack_require__(24);
-	(function () {
-		this.Parameters = []; // will be constructed in the end
-
-		this.Generators = {
-			square : audio.generators.square,
-			saw    : audio.generators.saw,
-			triangle : audio.generators.triangle,
-			sine   : audio.generators.sine,
-			noise  : audio.generators.noise,
-			synth  : audio.generators.synth
-		};
-
-		this.getGeneratorNames = function(){
-			var names = [];
-			for(var e in this.Generators)
-				names.push(e);
-			return names;
-		}
-
-		var nameToParam = function(name){
-			return name.replace(/ /g, "");
-		}
-
-		this.getParameters = function () {
-			var params = [];
-
-			var grp = 0;
-
-			// add param
-			var ap = function (name, min, max, def, step) {
-				if (step === undefined)
-					step = (max - min) / 1000;
-				var param = { name: name, id: nameToParam(name),
-							min: min, max: max, step:step, def: def,
-							type: "range", group: grp};
-				params.push(param);
-			};
-
-			// add option
-			var ao = function(name, options, def){
-				var param = {name: name, id: nameToParam(name),
-							options: options, def: def,
-							type: "option", group: grp };
-				params.push(param);
-			}
-
-			var gens = this.getGeneratorNames();
-			ao("Generator", gens, gens[0]);
-			ap("Super Sampling Quality", 0, 16, 0, 1);
-			ap("Master Volume",  0, 1, 0.4);
-			grp++;
-
-			ap("Attack Time",    0, 1, 0.1); // seconds
-			ap("Sustain Time",   0, 2, 0.3); // seconds
-			ap("Sustain Punch",  0, 3, 2);
-			ap("Decay Time",     0, 2, 1); // seconds
-			grp++;
-
-			ap("Min Frequency",   20, 2400, 0, 1);
-			ap("Start Frequency", 20, 2400, 440, 1);
-			ap("Max Frequency",   20, 2400, 2000, 1);
-			ap("Slide",           -1, 1, 0);
-			ap("Delta Slide",     -1, 1, 0);
-
-			grp++;
-			ap("Vibrato Depth",     0, 1, 0);
-			ap("Vibrato Frequency", 0.01, 48, 8);
-			ap("Vibrato Depth Slide",   -0.3, 1, 0);
-			ap("Vibrato Frequency Slide", -1, 1, 0);
-
-			grp++;
-			ap("Change Amount", -1, 1, 0);
-			ap("Change Speed",  0, 1, 0.1);
-
-			grp++;
-			ap("Square Duty", 0, 0.5, 0);
-			ap("Square Duty Sweep", -1, 1, 0);
-
-			grp++;
-			ap("Repeat Speed", 0, 0.8, 0);
-
-			grp++;
-			ap("Phaser Offset", -1, 1, 0);
-			ap("Phaser Sweep", -1, 1, 0);
-
-			grp++;
-			ap("LP Filter Cutoff", 0, 1, 1);
-			ap("LP Filter Cutoff Sweep", -1, 1, 0);
-			ap("LP Filter Resonance",    0, 1, 0);
-			ap("HP Filter Cutoff",       0, 1, 0);
-			ap("HP Filter Cutoff Sweep", -1, 1, 0);
-
-			return params;
-		};
-
-
-		/**
-		 * Input params object has the same parameters as described above
-		 * except all the spaces have been removed
-		 *
-		 * This returns an array of float values of the generated audio.
-		 *
-		 * To make it into a wave use:
-		 *    data = jsfx.generate(params)
-		 *    audio.make(data)
-		 */
-		this.generate = function(params){
-			// useful consts/functions
-			var TAU = 2 * Math.PI,
-				sin = Math.sin,
-				cos = Math.cos,
-				pow = Math.pow,
-				abs = Math.abs;
-			var SampleRate = audio.SampleRate;
-
-			// super sampling
-			var super_sampling_quality = params.SuperSamplingQuality | 0;
-			if(super_sampling_quality < 1) super_sampling_quality = 1;
-			SampleRate = SampleRate * super_sampling_quality;
-
-			// enveloping initialization
-			var _ss = 1.0 + params.SustainPunch;
-			var envelopes = [ {from: 0.0, to: 1.0, time: params.AttackTime},
-							{from: _ss, to: 1.0, time: params.SustainTime},
-							{from: 1.0, to: 0.0, time: params.DecayTime}];
-			var envelopes_len = envelopes.length;
-
-			// envelope sample calculation
-			for(var i = 0; i < envelopes_len; i++){
-				envelopes[i].samples = 1 + ((envelopes[i].time * SampleRate) | 0);
-			}
-			// envelope loop variables
-			var envelope = undefined;
-			var envelope_cur = 0.0;
-			var envelope_idx = -1;
-			var envelope_increment = 0.0;
-			var envelope_last = -1;
-
-			// count total samples
-			var totalSamples = 0;
-			for(var i = 0; i < envelopes_len; i++){
-				totalSamples += envelopes[i].samples;
-			}
-
-			// fix totalSample limit
-			if( totalSamples < SampleRate / 2){
-				totalSamples = SampleRate / 2;
-			}
-
-			var outSamples = (totalSamples / super_sampling_quality)|0;
-
-			// out data samples
-			var out = new Array(outSamples);
-			var sample = 0;
-			var sample_accumulator = 0;
-
-			// main generator
-			var generator = jsfx.Generators[params.Generator];
-			if (generator === undefined)
-				generator = this.Generators.square;
-			var generator_A = 0;
-			var generator_B = 0;
-
-			// square generator
-			generator_A = params.SquareDuty;
-			var square_slide = params.SquareDutySweep / SampleRate;
-
-			// phase calculation
-			var phase = 0;
-			var phase_speed = params.StartFrequency * TAU / SampleRate;
-
-			// phase slide calculation
-			var phase_slide = 1.0 + pow(params.Slide, 3.0) * 64.0 / SampleRate;
-			var phase_delta_slide = pow(params.DeltaSlide, 3.0) / (SampleRate * 1000);
-			if (super_sampling_quality !== undefined)
-				phase_delta_slide /= super_sampling_quality; // correction
-
-			// frequency limiter
-			if(params.MinFrequency > params.StartFrequency)
-				params.MinFrequency = params.StartFrequency;
-
-			if(params.MaxFrequency < params.StartFrequency)
-				params.MaxFrequency = params.StartFrequency;
-
-			var phase_min_speed = params.MinFrequency * TAU / SampleRate;
-			var phase_max_speed = params.MaxFrequency * TAU / SampleRate;
-
-			// frequency vibrato
-			var vibrato_phase = 0;
-			var vibrato_phase_speed = params.VibratoFrequency * TAU / SampleRate;
-			var vibrato_amplitude = params.VibratoDepth;
-
-			// frequency vibrato slide
-			var vibrato_phase_slide = 1.0 + pow(params.VibratoFrequencySlide, 3.0) * 3.0 / SampleRate;
-			var vibrato_amplitude_slide = params.VibratoDepthSlide / SampleRate;
-
-			// arpeggiator
-			var arpeggiator_time = 0;
-			var arpeggiator_limit = params.ChangeSpeed * SampleRate;
-			var arpeggiator_mod   = pow(params.ChangeAmount, 2);
-			if (params.ChangeAmount > 0)
-				arpeggiator_mod = 1 + arpeggiator_mod * 10;
-			else
-				arpeggiator_mod = 1 - arpeggiator_mod * 0.9;
-
-			// phaser
-			var phaser_max = 1024;
-			var phaser_mask = 1023;
-			var phaser_buffer = new Array(phaser_max);
-			for(var _i = 0; _i < phaser_max; _i++)
-				phaser_buffer[_i] = 0;
-			var phaser_pos = 0;
-			var phaser_offset = pow(params.PhaserOffset, 2.0) * (phaser_max - 4);
-			var phaser_offset_slide = pow(params.PhaserSweep, 3.0) * 4000 / SampleRate;
-			var phaser_enabled = (abs(phaser_offset_slide) > 0.00001) ||
-								(abs(phaser_offset) > 0.00001);
-
-			// lowpass filter
-			var filters_enabled = (params.HPFilterCutoff > 0.001) || (params.LPFilterCutoff < 0.999);
-
-			var lowpass_pos = 0;
-			var lowpass_pos_slide = 0;
-			var lowpass_cutoff = pow(params.LPFilterCutoff, 3.0) / 10;
-			var lowpass_cutoff_slide = 1.0 + params.HPFilterCutoffSweep / 10000;
-			var lowpass_damping = 5.0 / (1.0 + pow(params.LPFilterResonance, 2) * 20 ) *
-										(0.01 + params.LPFilterCutoff);
-			if ( lowpass_damping > 0.8)
-				lowpass_damping = 0.8;
-			lowpass_damping = 1.0 - lowpass_damping;
-			var lowpass_enabled = params.LPFilterCutoff < 0.999;
-
-			// highpass filter
-			var highpass_accumulator = 0;
-			var highpass_cutoff = pow(params.HPFilterCutoff, 2.0) / 10;
-			var highpass_cutoff_slide = 1.0 + params.HPFilterCutoffSweep / 10000;
-
-			// repeat
-			var repeat_time  = 0;
-			var repeat_limit = totalSamples;
-			if (params.RepeatSpeed > 0){
-				repeat_limit = pow(1 - params.RepeatSpeed, 2.0) * SampleRate + 32;
-			}
-
-			// master volume controller
-			var master_volume = params.MasterVolume;
-
-			var k = 0;
-			for(var i = 0; i < totalSamples; i++){
-				// main generator
-				sample = generator(phase, generator_A, generator_B);
-
-				// square generator
-				generator_A += square_slide;
-				if(generator_A < 0.0){
-					generator_A = 0.0;
-				} else if (generator_A > 0.5){
-					generator_A = 0.5;
-				}
-
-				if( repeat_time > repeat_limit ){
-					// phase reset
-					phase = 0;
-					phase_speed = params.StartFrequency * TAU / SampleRate;
-					// phase slide reset
-					phase_slide = 1.0 + pow(params.Slide, 3.0) * 3.0 / SampleRate;
-					phase_delta_slide = pow(params.DeltaSlide, 3.0) / (SampleRate * 1000);
-					if (super_sampling_quality !== undefined)
-						phase_delta_slide /= super_sampling_quality; // correction
-					// arpeggiator reset
-					arpeggiator_time = 0;
-					arpeggiator_limit = params.ChangeSpeed * SampleRate;
-					arpeggiator_mod   = 1 + (params.ChangeAmount | 0) / 12.0;
-					// repeat reset
-					repeat_time = 0;
-				}
-				repeat_time += 1;
-
-				// phase calculation
-				phase += phase_speed;
-
-				// phase slide calculation
-				phase_slide += phase_delta_slide;
-				phase_speed *= phase_slide;
-
-				// arpeggiator
-				if ( arpeggiator_time > arpeggiator_limit ){
-					phase_speed *= arpeggiator_mod;
-					arpeggiator_limit = totalSamples;
-				}
-				arpeggiator_time += 1;
-
-				// frequency limiter
-				if (phase_speed > phase_max_speed){
-					phase_speed = phase_max_speed;
-				} else if(phase_speed < phase_min_speed){
-					phase_speed = phase_min_speed;
-				}
-
-				// frequency vibrato
-				vibrato_phase += vibrato_phase_speed;
-				var _vibrato_phase_mod = phase_speed * sin(vibrato_phase) * vibrato_amplitude;
-				phase += _vibrato_phase_mod;
-
-				// frequency vibrato slide
-				vibrato_phase_speed *= vibrato_phase_slide;
-				if(vibrato_amplitude_slide){
-					vibrato_amplitude += vibrato_amplitude_slide;
-					if(vibrato_amplitude < 0){
-						vibrato_amplitude = 0;
-						vibrato_amplitude_slide = 0;
-					} else if (vibrato_amplitude > 1){
-						vibrato_amplitude = 1;
-						vibrato_amplitude_slide = 0;
-					}
-				}
-
-				// filters
-				if( filters_enabled ){
-
-					if( abs(highpass_cutoff) > 0.001){
-						highpass_cutoff *= highpass_cutoff_slide;
-						if(highpass_cutoff < 0.00001){
-							highpass_cutoff = 0.00001;
-						} else if(highpass_cutoff > 0.1){
-							highpass_cutoff = 0.1;
-						}
-					}
-
-					var _lowpass_pos_old = lowpass_pos;
-					lowpass_cutoff *= lowpass_cutoff_slide;
-					if(lowpass_cutoff < 0.0){
-						lowpass_cutoff = 0.0;
-					} else if ( lowpass_cutoff > 0.1 ){
-						lowpass_cutoff = 0.1;
-					}
-					if(lowpass_enabled){
-						lowpass_pos_slide += (sample - lowpass_pos) * lowpass_cutoff;
-						lowpass_pos_slide *= lowpass_damping;
-					} else {
-						lowpass_pos = sample;
-						lowpass_pos_slide = 0;
-					}
-					lowpass_pos += lowpass_pos_slide;
-
-					highpass_accumulator += lowpass_pos - _lowpass_pos_old;
-					highpass_accumulator *= 1.0 - highpass_cutoff;
-					sample = highpass_accumulator;
-				}
-
-				// phaser
-				if (phaser_enabled) {
-					phaser_offset += phaser_offset_slide;
-					if( phaser_offset < 0){
-						phaser_offset = -phaser_offset;
-						phaser_offset_slide = -phaser_offset_slide;
-					}
-					if( phaser_offset > phaser_mask){
-						phaser_offset = phaser_mask;
-						phaser_offset_slide = 0;
-					}
-
-					phaser_buffer[phaser_pos] = sample;
-					// phaser sample modification
-					var _p = (phaser_pos - (phaser_offset|0) + phaser_max) & phaser_mask;
-					sample += phaser_buffer[_p];
-					phaser_pos = (phaser_pos + 1) & phaser_mask;
-				}
-
-				// envelope processing
-				if( i > envelope_last ){
-					envelope_idx += 1;
-					if(envelope_idx < envelopes_len) // fault protection
-						envelope = envelopes[envelope_idx];
-					else // the trailing envelope is silence
-						envelope = {from: 0, to: 0, samples: totalSamples};
-					envelope_cur = envelope.from;
-					envelope_increment = (envelope.to - envelope.from) / (envelope.samples + 1);
-					envelope_last += envelope.samples;
-				}
-				sample *= envelope_cur;
-				envelope_cur += envelope_increment;
-
-				// master volume controller
-				sample *= master_volume;
-
-				// prepare for next sample
-				if(super_sampling_quality > 1){
-					sample_accumulator += sample;
-					if( (i + 1) % super_sampling_quality === 0){
-						out[k] = sample_accumulator / super_sampling_quality;
-						k += 1;
-						sample_accumulator = 0;
-					}
-				} else {
-					out[i] = sample;
-				}
-			}
-
-			// return out;
-
-			// add padding 10ms
-			var len = (SampleRate / 100)|0;
-			var padding = new Array(len);
-			for(var i = 0; i < len; i++)
-				padding[i] = 0;
-			return padding.concat(out).concat(padding);
-		}
-
-		this.Parameters = this.getParameters();
-
-	}).apply(jsfx);
-	return jsfx;
-}));
-
-/***/ }),
-/* 23 */,
-/* 24 */
 /***/ (function(module, exports) {
 
 // NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.
@@ -4607,6 +4621,72 @@ var audio = {};
     };
 }).apply(audio);
 return audio;
+}));
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.
+
+(function(root, factory) {
+	if (typeof module === "object" && typeof module.exports === "object") {
+		module.exports = factory();
+	} else {
+		root.jsfxlib = factory();
+	}
+}(this, function() {
+    "use strict";
+    var jsfx = __webpack_require__(12);
+var jsfxlib = {};
+(function () {
+    // takes object with param arrays
+    // audiolib = {
+    //   Sound : ["sine", 1, 2, 4, 1...
+    // }
+    //
+    // returns object with audio samples
+    // p.Sound.play()
+    this.createWaves = function(lib){
+        var sounds = {};
+        for (var e in lib) {
+            var data = lib[e];
+            sounds[e] = this.createWave(data);
+        }
+        return sounds;
+    }
+
+    /* Create a single sound:
+       var p = jsfxlib.createWave(["sine", 1,2,3, etc.]);
+       p.play();
+   */
+    this.createWave = function(lib) {
+        var params = this.arrayToParams(lib),
+            data = jsfx.generate(params),
+            wave = audio.make(data);
+
+        return wave;
+    }
+
+    this.paramsToArray = function(params){
+        var pararr = [];
+        var len = jsfx.Parameters.length;
+        for(var i = 0; i < len; i++){
+            pararr.push(params[jsfx.Parameters[i].id]);
+        }
+        return pararr;
+    }
+
+    this.arrayToParams = function(pararr){
+        var params = {};
+        var len = jsfx.Parameters.length;
+        for(var i = 0; i < len; i++){
+            params[jsfx.Parameters[i].id] = pararr[i];
+        }
+        return params;
+    }
+}).apply(jsfxlib);
+return jsfxlib;
 }));
 
 /***/ })

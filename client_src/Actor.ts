@@ -149,6 +149,24 @@ export class Actor
         this.drawing.draw();
         this.age++;
     }
+    /**
+     * Collision handling method.
+     * 
+     * Returns true if an overlap is found.
+     * Uses the .drawing property on the actor to check for overlaps between quads.
+     * Call during the Actors update function.
+     * ```
+     * update()
+     * {
+     *      this.checkOverlap(Enemy, (e : Enemy)=>{
+     *           console.log("overlapping enemy!");
+     *           e.kill();
+     *      });
+     * }
+     * ```
+     * @param targetClass The class of actors to check this actor against.
+     * @param handler callback function if an overlap is found.
+     */
     checkOverlap(targetClass:any, handler?:Function)
     : boolean
     {

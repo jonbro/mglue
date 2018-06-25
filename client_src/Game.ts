@@ -8,6 +8,7 @@ import { Keyboard } from "./Keyboard"
 import { Leaderboard } from "./Leaderboard";
 import {GameState} from "./GameState";
 import "./Extensions";
+import { cat } from "shelljs";
 
 /**
  * Handles the core game loop. Subclass this to kick off your game.
@@ -53,6 +54,7 @@ class Game
     protected lastScore : number = -1;
     protected highScore : number = -1;
     private _ticks : number = 0;
+    private saveSupported : boolean = false;
     /** actor used to display the leaderboard */
     protected leaderboardText : TextActor = new TextActor("");
     /** helper strings for ordinals */
@@ -73,10 +75,31 @@ class Game
         window.cancelAnimationFrame(Game.animationFrameIdentifier);
         // clean up any straggling actors
         Actor.clear();
-        if(window.localStorage.getItem(Config.saveName))
+
+        if(Config.saveName != "changeMe")
         {
-            this.highScore = Number(window.localStorage.getItem(Config.saveName));
+            this.saveSupported = true;
         }
+        else
+        {
+            console.warn("Change Config.saveName to add support for score saving");
+        }
+        if(this.saveSupported)
+        {
+            try
+            {
+                if(window.localStorage.getItem(Config.saveName))
+                {
+                    this.highScore = Number(window.localStorage.getItem(Config.saveName));
+                }    
+            }
+            catch(error)
+            {
+                this.saveSupported = false;
+                console.log(error);
+            }    
+        }
+        
         Game._INTERVAL = 1000/Config.fps;
         INTERVAL = Game._INTERVAL;
         Game.display = display;
@@ -107,7 +130,17 @@ class Game
         if(this.lastScore > 0 && this.lastScore > this.highScore)
         {
             this.highScore = this.lastScore;
-            window.localStorage.setItem(Config.saveName, this.highScore.toString());
+            if(this.saveSupported)
+            {
+                try
+                {
+                    window.localStorage.setItem(Config.saveName, this.highScore.toString());
+                }
+                catch
+                {
+                    console.log("failed to write local storage");
+                }    
+            }
         }
         this.transitionToTitle();
         this.currentState = GameState.title;
@@ -263,7 +296,7 @@ class Game
         Game.display.drawText(`SCORE: ${this.score}`, 1,0,1);
         if(Keyboard.keyDown[67])
         {
-            Game.display.beginCapture(3, 0.01667, 0.65);
+            Game.display.beginCapture(Config.captureConfig.duration, Config.captureConfig.interval, Config.captureConfig.scale);
         }    
         if(Game.display.isCapturing)
         {

@@ -3,7 +3,7 @@ export {Random} from "./Random"
 export {Actor, TextActor} from "./Actor";
 export {Color} from "./Color";
 export {Display, DisplayInterface} from "./Display";
-export {Config} from "./Config";
+export {Config, CaptureConfig} from "./Config";
 export {Mouse} from "./Mouse";
 export {ParticleSystem} from "./ParticleSystem"
 export {Keyboard} from "./Keyboard"

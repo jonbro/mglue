@@ -22,16 +22,16 @@ let getBufferFromJsfx = function(context, lib){
 
 export class Sound
 {
-    static ctx : AudioContext;
-    static gainNode : GainNode;
-    static enabled : boolean;
-    static sounds : Sound[] = [];
-    static scheduleInterval : number;
-    static playInterval : number;
-    static quantize : 0.5;
-    static drumParameters : any;
-    static drumPatterns : any;
-    static random : Random;
+    private static context : AudioContext;
+    private static gainNode : GainNode;
+    private static enabled : boolean;
+    private static sounds : Sound[] = [];
+    private static scheduleInterval : number;
+    private static playInterval : number;
+    private static quantize : 0.5;
+    private static drumParameters : any;
+    private static drumPatterns : any;
+    private static random : Random;
     private oneShot : boolean;
     private scheduledTime : number;
     private patternInterval : number;
@@ -41,6 +41,7 @@ export class Sound
     private volume : number = 1;
     private playedTime : number;
     private isPlayingLoop : boolean;
+
     constructor()
     {
         if(!Sound.sounds)
@@ -50,14 +51,15 @@ export class Sound
         Sound.sounds.push(this);
         this.volume = 1;
     }
+    /** call to set up all static properties */
     static initialize()
     {
         try
         {
-            this.ctx = new AudioContext();
-            this.gainNode = this.ctx.createGain();
+            this.context = new AudioContext();
+            this.gainNode = this.context.createGain();
             this.gainNode.gain.value = Config.soundVolume;
-            this.gainNode.connect(this.ctx.destination);
+            this.gainNode.connect(this.context.destination);
             this.enabled = true;
         }
         catch(error)
@@ -72,27 +74,37 @@ export class Sound
         this.initDrumPatterns()
         this.random = new Random();
     }
+    /**
+     * Change the seed that is used by the Sound internal Random instance.
+     * @param seed random seed value
+     */
     static setSeed(seed : number)
     {
         this.random.seed(seed);
     }
+    /**
+     * call once per frame to update all playing loops, and play sounds that are linked to quantization.
+     */
     static update()
     {
         if(!Sound.enabled)
         {
             return;
         }
-        let currentTime = Sound.ctx.currentTime;
+        let currentTime = Sound.context.currentTime;
         let nextTime = currentTime + Sound.scheduleInterval;
         this.sounds.forEach(sound => {
             sound.update(currentTime, nextTime);
         });
     }
+    /**
+     * stop all playing sounds and loops.
+     */
     private static clear()
     {
         this.sounds = [];
     }
-    protected static initDrumParams()
+    private static initDrumParams()
     {
         this.drumParameters = [
             ["sine",0,3,0,0.1740,0.1500,0.2780,20,528,2400,-0.6680,0,0,0.0100,0.0003,0,0,0,0.5000,-0.2600,0,0.1000,0.0900,1,0,0,0.1240,0],
@@ -104,7 +116,7 @@ export class Sound
             ["synth",0,2,0,0.2400,0.0390,0.1880,328,1269,2400,-0.8880,0,0,0.0100,0.0003,0,0,0,0.4730,0.1660,0,0.1700,0.1880,1,0,0,0.1620,0]
         ];
     }
-    protected static initDrumPatterns()
+    private static initDrumPatterns()
     {
         this.drumPatterns = [
             '0000010000000001',
@@ -181,6 +193,7 @@ export class Sound
         });
 		return gdp;
     }
+    //#region Private Methods
     private calculateNextScheduledTime()
     {
         // this function steps forward in the pattern, until it finds a 1
@@ -200,11 +213,16 @@ export class Sound
     }
     private playAt(time : number)
     {
-        let s = Sound.ctx.createBufferSource()
+        let s = Sound.context.createBufferSource()
         s.buffer = this.buffer;
         s.connect(Sound.gainNode);
         s.start(time);
     }
+    /**
+     * internal method to play a quantized sound or play a looping sound
+     * @param currentTime audio context time
+     * @param nextTime next time this update function will be called
+     */
     private update(currentTime : number, nextTime : number)
     {
         if(this.oneShot)
@@ -238,6 +256,9 @@ export class Sound
             this.calculateNextScheduledTime();
         }
     }
+    //#endregion
+
+    //#region Public Methods
     setFromParams(params : any)
     {
         if(!Sound.enabled)
@@ -245,7 +266,7 @@ export class Sound
             return this;
         }
         params[2] *= this.volume;
-        this.buffer = getBufferFromJsfx(Sound.ctx, params);
+        this.buffer = getBufferFromJsfx(Sound.context, params);
         return this;
     }
     setPattern(pattern, patternInterval = 0.25)
@@ -258,18 +279,27 @@ export class Sound
     {
         this.playAt(0);
     }
-    /** schedules the sound to play at the next quantized time */
+    /** 
+     * schedules the sound to play at the next quantized time
+     * */
     play()
     {
         this.oneShot = true;
         return this;
     }
+    /**
+     * Plays the sound as a looping pattern.
+     * Will throw an error if the sound doesn't have a pattern defined.
+     */
     playPattern()
     {
         this.isPlayingLoop = true;
         this.scheduledTime = null;
         return this;
     }
+    /**
+     * removes a playing sound from the scheduled sounds.
+     */
     remove()
     {
         let i = Sound.sounds.indexOf(this);
@@ -278,4 +308,5 @@ export class Sound
             Sound.sounds.splice(i, 1);
         }
     }
+    //#endregion
 }

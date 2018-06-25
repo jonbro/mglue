@@ -56,6 +56,8 @@ function RewriteCommentToMarkdown(e)
         e.comment.text = Marked.parse(e.comment.text);
     }
 }
+
+
 datasource = JSON.parse(datasource);
 //console.log(datasource);
 let remappedData : any = {};
@@ -70,7 +72,6 @@ datasource["children"].forEach(element => {
             if(childElement.children)
             {
                 for (let i = childElement.children.length-1; i >= 0; i--) {
-                    RewriteCommentToMarkdown(childElement.children[i]);
 
                     let te = childElement.children[i];
                     let dr = new typedoc.DeclarationReflection(te);
@@ -94,6 +95,11 @@ datasource["children"].forEach(element => {
                         }    
                     }
                     childElement.children[i].signature = sig;
+                    if(te.signatures && te.signatures.length >= 1)
+                    {
+                        childElement.children[i].comment = te.signatures[0].comment;
+                    }
+                    RewriteCommentToMarkdown(childElement.children[i]);
                 }    
             }
         });
@@ -123,6 +129,7 @@ remappedData = {classes:[
     remappedData['"Actor"'].Actor,
     remappedData['"Actor"'].ActorGroup,
     remappedData['"Drawing"'].Drawing,
+    remappedData['"Sound"'].Sound,
     remappedData['"Vector"'].Vector
 ]}
 let template = h.compile(source);

@@ -1,0 +1,6 @@
+
+- make the gif capture support frame dropping
+- save name in the config should bail with an error if not set
+- pause game when focus is lost on the page
+- mobile button support
+- rewrite the public api of the sound to be more sensible

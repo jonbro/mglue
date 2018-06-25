@@ -63,7 +63,6 @@ datasource["children"].forEach(function (element) {
             RewriteCommentToMarkdown(childElement);
             if (childElement.children) {
                 for (var i = childElement.children.length - 1; i >= 0; i--) {
-                    RewriteCommentToMarkdown(childElement.children[i]);
                     var te = childElement.children[i];
                     var dr = new typedoc.DeclarationReflection(te);
                     if (te.flags.isPrivate) {
@@ -83,6 +82,10 @@ datasource["children"].forEach(function (element) {
                         }
                     }
                     childElement.children[i].signature = sig;
+                    if (te.signatures && te.signatures.length >= 1) {
+                        childElement.children[i].comment = te.signatures[0].comment;
+                    }
+                    RewriteCommentToMarkdown(childElement.children[i]);
                 }
             }
         });
@@ -111,6 +114,7 @@ remappedData = { classes: [
         remappedData['"Actor"'].Actor,
         remappedData['"Actor"'].ActorGroup,
         remappedData['"Drawing"'].Drawing,
+        remappedData['"Sound"'].Sound,
         remappedData['"Vector"'].Vector
     ] };
 var template = h.compile(source);

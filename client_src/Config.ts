@@ -1,6 +1,10 @@
 import { Color } from "./Color";
 
-class Config
+export class CaptureConfig
+{
+    constructor(public scale : number = 0.5, public duration : number = 3, public interval : number = 0.05) { }
+}
+export class Config
 {
     static fps: number = 60;
     static backgroundColor : Color = Color.black;
@@ -8,7 +12,7 @@ class Config
     static soundVolume : number = 0.02;
     static debugMode : boolean = true;
     static title : string = "GAME TITLE";
-    static saveName : string = "Wormdrive3hs"
+    static saveName : string = "changeMe"
     static isDebuggingMode : boolean = false;
+    static captureConfig : CaptureConfig = new CaptureConfig();
 }
-export { Config }

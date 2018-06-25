@@ -13,6 +13,7 @@ declare class Game {
     protected lastScore: number;
     protected highScore: number;
     private _ticks;
+    private saveSupported;
     /** actor used to display the leaderboard */
     protected leaderboardText: TextActor;
     /** helper strings for ordinals */
