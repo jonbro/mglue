@@ -506,7 +506,7 @@ var Game = /** @class */ (function () {
     Game.prototype.onEndGame = function () { };
     Game.prototype.update = function () { };
     Game.prototype.updateTitle = function () {
-        if (Keyboard_1.Keyboard.keyDown[Keyboard_1.Keyboard.SPACE]) {
+        if (Keyboard_1.Keyboard.keyDown[Keyboard_1.Keyboard.SPACE] || Mouse_1.Mouse.pressedThisFrame) {
             this.transitionToGame();
         }
         if (this.leaderboardEnabled) {
@@ -571,7 +571,7 @@ var Game = /** @class */ (function () {
     Game.prototype.transitionToTitle = function () {
         var ty = (Config_1.Config.title.length == 1) ? .2 : .15;
         new Actor_1.TextActor(Config_1.Config.title).setPosition(new Vector_1.Vector(.5, ty)).setDurationForever().scale = new Vector_1.Vector(2, 2);
-        new Actor_1.TextActor('[ SPACE ] TO START').setPosition(new Vector_1.Vector(.5, .7)).setDurationForever();
+        new Actor_1.TextActor('[ SPACE / TAP ] TO START').setPosition(new Vector_1.Vector(.5, .7)).setDurationForever();
         if (this.lastScore >= 0) {
             new Actor_1.TextActor("LAST SCORE: " + this.lastScore).setPosition(new Vector_1.Vector(.5, .8)).setDurationForever();
             Leaderboard_1.Leaderboard.set(this.score);
@@ -616,8 +616,8 @@ var Game = /** @class */ (function () {
         if (!this.preUpdateFrame(time)) {
             return;
         }
-        // if the player has pressed c, then kick off capturing
         Game.display.preUpdate();
+        Mouse_1.Mouse.Update();
         this._ticks++;
         this.update();
         Actor_1.Actor.update();
@@ -625,6 +625,7 @@ var Game = /** @class */ (function () {
             this.updateTitle();
         }
         Game.display.drawText("SCORE: " + this.score, 1, 0, 1);
+        // if the player has pressed c, then kick off capturing
         if (Keyboard_1.Keyboard.keyDown[67]) {
             Game.display.beginCapture(Config_1.Config.captureConfig.duration, Config_1.Config.captureConfig.interval, Config_1.Config.captureConfig.scale);
         }
@@ -1469,6 +1470,9 @@ var Mouse = /** @class */ (function () {
         Display_1.Display.element.addEventListener('mousedown', Mouse.onMouseDown);
         Display_1.Display.element.addEventListener('mouseup', Mouse.onMouseUp);
         Display_1.Display.element.addEventListener('mousemove', Mouse.onMouseMove);
+        Display_1.Display.element.addEventListener('touchstart', this.onTouchStart);
+        Display_1.Display.element.addEventListener('touchmove', this.onTouchMove);
+        Display_1.Display.element.addEventListener('touchend', this.onTouchEnd);
     };
     Mouse.onMouseUp = function (e) {
         Mouse.isPressed = false;
@@ -1486,6 +1490,26 @@ var Mouse = /** @class */ (function () {
         Mouse.position.x = ((e.pageX - rect.left) / Display_1.Display.size.x);
         Mouse.position.y = ((e.pageY - rect.top) / Display_1.Display.size.y);
     };
+    Mouse.onTouchMove = function (e) {
+        e.preventDefault();
+        var rect = e.target.getBoundingClientRect();
+        var touch = e.touches[0];
+        Mouse.position.x = ((touch.pageX - rect.left) / Display_1.Display.size.x).clamp(0, 1);
+        Mouse.position.y = ((touch.pageY - rect.top) / Display_1.Display.size.y).clamp(0, 1);
+    };
+    Mouse.onTouchStart = function (e) {
+        Mouse.isPressed = true;
+        Mouse.onTouchMove(e);
+    };
+    Mouse.onTouchEnd = function (e) {
+        Mouse.isPressed = false;
+    };
+    Mouse.Update = function () {
+        Mouse.pressedThisFrame = Mouse.isPressed && !Mouse.wasPressed;
+        Mouse.wasPressed = Mouse.isPressed;
+    };
+    Mouse.pressedThisFrame = false;
+    Mouse.wasPressed = false;
     return Mouse;
 }());
 exports.Mouse = Mouse;

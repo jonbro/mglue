@@ -151,7 +151,7 @@ class Game
     protected update() {}
     protected updateTitle()
     {
-        if(Keyboard.keyDown[Keyboard.SPACE])
+        if(Keyboard.keyDown[Keyboard.SPACE] || Mouse.pressedThisFrame)
         {
             this.transitionToGame();
         }
@@ -228,7 +228,7 @@ class Game
     {
         let ty = (Config.title.length == 1)?.2:.15;
         new TextActor(Config.title).setPosition(new Vector(.5, ty)).setDurationForever().scale = new Vector(2,2);
-        new TextActor('[ SPACE ] TO START').setPosition(new Vector(.5, .7)).setDurationForever()
+        new TextActor('[ SPACE / TAP ] TO START').setPosition(new Vector(.5, .7)).setDurationForever()
         if(this.lastScore >= 0)
         {        
             new TextActor(`LAST SCORE: ${this.lastScore}`).setPosition(new Vector(.5, .8)).setDurationForever()
@@ -284,8 +284,8 @@ class Game
         {
             return;
         }
-        // if the player has pressed c, then kick off capturing
         Game.display.preUpdate();
+        Mouse.Update();
         this._ticks++;
         this.update();
         Actor.update();
@@ -294,6 +294,7 @@ class Game
             this.updateTitle();
         }
         Game.display.drawText(`SCORE: ${this.score}`, 1,0,1);
+        // if the player has pressed c, then kick off capturing
         if(Keyboard.keyDown[67])
         {
             Game.display.beginCapture(Config.captureConfig.duration, Config.captureConfig.interval, Config.captureConfig.scale);
