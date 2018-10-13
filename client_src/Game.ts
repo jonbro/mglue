@@ -6,7 +6,6 @@ import { Mouse } from "./Mouse";
 import { Vector } from "./Vector";
 import { Keyboard } from "./Keyboard"
 import { Leaderboard } from "./Leaderboard";
-import {GameState} from "./GameState";
 import "./Extensions";
 import { cat } from "shelljs";
 
@@ -65,9 +64,9 @@ class Game
     {
         return this._ticks;
     }
-    currentState = GameState.title;
+    currentState = "title";
     private static animationFrameIdentifier : number;
-    public get gameOver() { return this.currentState!=GameState.game; }
+    public get gameOver() { return this.currentState!="game"; }
     constructor(display : DisplayInterface = new Display())
     {
         // if there was a game running prior we need to make sure we clean up its animation loop
@@ -126,6 +125,8 @@ class Game
     }
     endGame()
     {
+        // clear the touch down so it doesn't automatically jump past the main screen
+        Mouse.pressedThisFrame = false;
         this.lastScore = this.score;
         if(this.lastScore > 0 && this.lastScore > this.highScore)
         {
@@ -143,7 +144,7 @@ class Game
             }
         }
         this.transitionToTitle();
-        this.currentState = GameState.title;
+        this.currentState = "title";
         this.onEndGame();
     }
     protected onBeginGame(){}
@@ -253,7 +254,7 @@ class Game
     }
     private transitionToGame()
     {
-        this.currentState = GameState.game;
+        this.currentState = "game";
         this.score = 0;
         Actor.clear();
         this.onBeginGame();
@@ -289,7 +290,7 @@ class Game
         this._ticks++;
         this.update();
         Actor.update();
-        if(this.currentState == GameState.title)
+        if(this.currentState == "title")
         {
             this.updateTitle();
         }
