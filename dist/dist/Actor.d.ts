@@ -67,7 +67,7 @@ export declare class Actor {
      *
      * @param targetClass an array of actor classes, or a single actor class
      */
-    static scroll(targetClass: Array<Actor> | Actor, offset: Vector): void;
+    static scroll<T extends Actor>(targetClass: Array<new () => T>, offset: Vector): void;
     setPosition(p: Vector): Actor;
     setVelocity(velocity: Vector): Actor;
     lateUpdate(): void;

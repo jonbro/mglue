@@ -32,12 +32,12 @@ declare class Game {
     protected update(): void;
     protected updateTitle(): void;
     protected updateLeaderboard(): void;
-    private transitionToTitle();
+    private transitionToTitle;
     enableLeaderboard(leaderboardUrl?: string): void;
-    private transitionToGame();
-    private preUpdateFrame(time);
-    private updateFrame(time);
-    private postUpdateFrame();
+    private transitionToGame;
+    private preUpdateFrame;
+    private updateFrame;
+    private postUpdateFrame;
     private static requestAnimationFrame;
 }
 export { Game };

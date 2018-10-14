@@ -124,8 +124,8 @@ class TextDrawer
 }
 class DrawingRect
 {
-    private currentPosition : Vector = new Vector(0,0);
-    private currentSize : Vector = new Vector(0,0);
+    currentPosition : Vector = new Vector(0,0);
+    currentSize : Vector = new Vector(0,0);
     private
     constructor(
         public color : Color,
@@ -174,7 +174,7 @@ class Drawing
     position : Vector = new Vector(0,0);
     rotation : number = 0;
     scale : Vector = new Vector(1,1); 
-    private rects : DrawingRect[] = [];
+    rects : DrawingRect[] = [];
     private color : Color;
     hasCollision : boolean = true;
     private lastAdded : any;
@@ -337,4 +337,4 @@ class Drawing
         return false;
     }
 }
-export { Drawing, TextDrawer }
+export { Drawing, DrawingRect, TextDrawer }

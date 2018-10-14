@@ -11,6 +11,21 @@ declare class TextDrawer {
     drawDots(li: any, x: any, y: any, color: any, size: any): void;
     setSize(size: Vector): void;
 }
+declare class DrawingRect {
+    color: Color;
+    width: number;
+    height: number;
+    offsetX: number;
+    offsetY: number;
+    hasCollision: any;
+    currentPosition: Vector;
+    currentSize: Vector;
+    private: any;
+    constructor(color: Color, width: number, height: number, offsetX: number, offsetY: number, hasCollision: any);
+    updateState(drawing: Drawing): void;
+    draw(drawing: Drawing): void;
+    isOverlapping(other: DrawingRect): boolean;
+}
 declare class Drawing {
     /**
      * Internal class for tracking the last type of rectangle which was added to a drawing
@@ -19,7 +34,7 @@ declare class Drawing {
     position: Vector;
     rotation: number;
     scale: Vector;
-    private rects;
+    rects: DrawingRect[];
     private color;
     hasCollision: boolean;
     private lastAdded;
@@ -35,4 +50,4 @@ declare class Drawing {
     draw(): void;
     isOverlapping(other: Drawing): boolean;
 }
-export { Drawing, TextDrawer };
+export { Drawing, DrawingRect, TextDrawer };

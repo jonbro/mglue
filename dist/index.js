@@ -379,7 +379,6 @@ var Mouse_1 = __webpack_require__(8);
 var Vector_1 = __webpack_require__(0);
 var Keyboard_1 = __webpack_require__(9);
 var Leaderboard_1 = __webpack_require__(10);
-var GameState_1 = __webpack_require__(19);
 __webpack_require__(11);
 /**
  * Handles the core game loop. Subclass this to kick off your game.
@@ -423,7 +422,7 @@ var Game = /** @class */ (function () {
         this.leaderboardText = new Actor_1.TextActor("");
         /** helper strings for ordinals */
         this.rankStrings = ['ST', 'ND', 'RD'];
-        this.currentState = GameState_1.GameState.title;
+        this.currentState = "title";
         // if there was a game running prior we need to make sure we clean up its animation loop
         // lets us spawn off a bunch of games in a row without timing issues
         window.cancelAnimationFrame(Game.animationFrameIdentifier);
@@ -470,7 +469,7 @@ var Game = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(Game.prototype, "gameOver", {
-        get: function () { return this.currentState != GameState_1.GameState.game; },
+        get: function () { return this.currentState != "game"; },
         enumerable: true,
         configurable: true
     });
@@ -486,6 +485,8 @@ var Game = /** @class */ (function () {
         }
     };
     Game.prototype.endGame = function () {
+        // clear the touch down so it doesn't automatically jump past the main screen
+        Mouse_1.Mouse.pressedThisFrame = false;
         this.lastScore = this.score;
         if (this.lastScore > 0 && this.lastScore > this.highScore) {
             this.highScore = this.lastScore;
@@ -499,7 +500,7 @@ var Game = /** @class */ (function () {
             }
         }
         this.transitionToTitle();
-        this.currentState = GameState_1.GameState.title;
+        this.currentState = "title";
         this.onEndGame();
     };
     Game.prototype.onBeginGame = function () { };
@@ -591,7 +592,7 @@ var Game = /** @class */ (function () {
         this.leaderboardEnabled = true;
     };
     Game.prototype.transitionToGame = function () {
-        this.currentState = GameState_1.GameState.game;
+        this.currentState = "game";
         this.score = 0;
         Actor_1.Actor.clear();
         this.onBeginGame();
@@ -621,7 +622,7 @@ var Game = /** @class */ (function () {
         this._ticks++;
         this.update();
         Actor_1.Actor.update();
-        if (this.currentState == GameState_1.GameState.title) {
+        if (this.currentState == "title") {
             this.updateTitle();
         }
         Game.display.drawText("SCORE: " + this.score, 1, 0, 1);
@@ -1001,10 +1002,7 @@ var Actor = /** @class */ (function () {
      * @param targetClass an array of actor classes, or a single actor class
      */
     Actor.scroll = function (targetClass, offset) {
-        var t = [targetClass];
-        if (targetClass instanceof Array) {
-            t = targetClass;
-        }
+        var t = targetClass;
         t.forEach(function (c) {
             Actor.getGroup(c).forEach(function (a) {
                 a.position.add(offset);
@@ -1322,6 +1320,7 @@ var DrawingRect = /** @class */ (function () {
     };
     return DrawingRect;
 }());
+exports.DrawingRect = DrawingRect;
 var Drawing = /** @class */ (function () {
     function Drawing() {
         this.position = new Vector_1.Vector(0, 0);
@@ -1555,7 +1554,7 @@ var Keyboard = /** @class */ (function () {
     return Keyboard;
 }());
 exports.Keyboard = Keyboard;
-//Keyboard.initialize(); 
+//Keyboard.initialize();
 
 
 /***/ }),
@@ -1694,7 +1693,7 @@ Number.prototype.mod = function (n) {
 }(this, function() {
 	"use strict";
 	var jsfx = {};
-    var audio = __webpack_require__(22);
+    var audio = __webpack_require__(21);
 	(function () {
 		this.Parameters = []; // will be constructed in the end
 
@@ -2132,7 +2131,7 @@ exports.Config = Config_1.Config;
 exports.CaptureConfig = Config_1.CaptureConfig;
 var Mouse_1 = __webpack_require__(8);
 exports.Mouse = Mouse_1.Mouse;
-var ParticleSystem_1 = __webpack_require__(20);
+var ParticleSystem_1 = __webpack_require__(19);
 exports.ParticleSystem = ParticleSystem_1.ParticleSystem;
 var Keyboard_1 = __webpack_require__(9);
 exports.Keyboard = Keyboard_1.Keyboard;
@@ -2143,7 +2142,7 @@ var Leaderboard_1 = __webpack_require__(10);
 exports.Leaderboard = Leaderboard_1.Leaderboard;
 var Game_1 = __webpack_require__(2);
 exports.Game = Game_1.Game;
-var Sound_1 = __webpack_require__(21);
+var Sound_1 = __webpack_require__(20);
 exports.Sound = Sound_1.Sound;
 __webpack_require__(11);
 /**/ 
@@ -4073,38 +4072,6 @@ if (true) {
 
 "use strict";
 
-// NOTE: this is really not great, should just replace it with some kind of simpler state lookup,
-// either functions that resolve to numbers or just strings
-// https://stackoverflow.com/questions/46025487/create-extendable-enums-for-use-in-extendable-interfaces
-Object.defineProperty(exports, "__esModule", { value: true });
-// create an enum from given values
-function makeEnum() {
-    var vals = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        vals[_i] = arguments[_i];
-    }
-    var ret = {};
-    vals.forEach(function (k) { return ret[k] = k; });
-    return ret;
-}
-// take an existing enum and extend it with more values
-function extendEnum(firstEnum) {
-    var vals = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        vals[_i - 1] = arguments[_i];
-    }
-    return Object.assign(makeEnum.apply(void 0, vals), firstEnum);
-}
-var GameState = makeEnum("title", "game");
-exports.GameState = GameState;
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4170,7 +4137,7 @@ var ParticleActor = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4182,7 +4149,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Config_1 = __webpack_require__(4);
 var Random_1 = __webpack_require__(5);
 var jsfx = __webpack_require__(12);
-var jsfxlib = __webpack_require__(23);
+var jsfxlib = __webpack_require__(22);
 var getBufferFromJsfx = function (context, lib) {
     var params = jsfxlib.arrayToParams(lib);
     var data = jsfx.generate(params);
@@ -4433,7 +4400,7 @@ exports.Sound = Sound;
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports) {
 
 // NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.
@@ -4648,7 +4615,7 @@ return audio;
 }));
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // NOTE!!! THIS IS A MODIFIED VERSION OF JSFX... YOU CAN'T JUST DROP IN REPLACE IT.

@@ -1,3 +1,6 @@
+/**
+ * This is a pretty direct port of the sound class in https://github.com/abagames/mgl.coffee
+ */
 export declare class Sound {
     private static context;
     private static gainNode;
@@ -33,20 +36,20 @@ export declare class Sound {
     /**
      * stop all playing sounds and loops.
      */
-    private static clear();
-    private static initDrumParams();
-    private static initDrumPatterns();
+    private static clear;
+    private static initDrumParams;
+    private static initDrumPatterns;
     static generateParams(seed: any, params: any, mixRatio?: number): any;
     static generateDrumParams(seed?: number): any;
     static generateDrumPattern(seed?: number): string;
-    private calculateNextScheduledTime();
-    private playAt(time);
+    private calculateNextScheduledTime;
+    private playAt;
     /**
      * internal method to play a quantized sound or play a looping sound
      * @param currentTime audio context time
      * @param nextTime next time this update function will be called
      */
-    private update(currentTime, nextTime);
+    private update;
     setFromParams(params: any): this;
     setPattern(pattern: any, patternInterval?: number): this;
     playNow(): void;

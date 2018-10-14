@@ -116,13 +116,9 @@ export class Actor
      * 
      * @param targetClass an array of actor classes, or a single actor class
      */
-    static scroll(targetClass : Array<Actor> | Actor, offset:Vector)
+    static scroll<T extends Actor>(targetClass : Array<new()=>T>, offset:Vector)
     {
-        let t = [targetClass];
-        if(targetClass instanceof Array)
-        {
-            t = targetClass;
-        }
+        let t = targetClass;
         t.forEach(c => {
             Actor.getGroup(c).forEach(a =>{
                 a.position.add(offset);
