@@ -1,4 +1,4 @@
-## mGlue is an engine for making small arcade games
+# mGlue is an engine for making small arcade games
 It is written in typescript, and based on concepts from [MGL.coffee](https://github.com/abagames/mgl.coffee)
 
 It is currently in prerelease, meaning that the api has not stabilized. However, it is totally possible to make games with it. Below are a few of the games that have been made using it so far.
@@ -6,8 +6,9 @@ It is currently in prerelease, meaning that the api has not stabilized. However,
 - [Worm Drive](http://jonbro.itch.io/worm-drive/)
 - [Juggle Ship](http://jonbro.itch.io/juggle-ship/)
 
+If you want a ton of examples of games it would be possible to make with this engine, check out [kenta cho's 50 small games](http://www.asahi-net.or.jp/~cs8k-cyu/blog/2014/12/12/games-in-2014/). This weekly game project, and the engine that came out of it, inspired me to write *mGlue*.
 
-### Features
+## Features
 
 This engine is intentionally limited to get you to focus on making the bits of the game that are most important, and not let you get out into the weeds of "making cool art" or "coding a game loop". While you could use this engine to make a type of game that wouldn't be classified as an "arcade game", it is tuned to make arcade games as quickly as possible.
 
@@ -21,16 +22,28 @@ This engine is intentionally limited to get you to focus on making the bits of t
 - touchscreen, mouse, and keyboard input
 - procedural sound effects and music
 
+## Getting Started
 
-### API Overview
+The best way to get started with the project is as follows:
+
+- install [node.js](https://nodejs.org) if you don't have it already.
+- make sure you have correctly set up all the nodejs paths.
+- download [the mglue template](https://github.com/jonbro/mglueTemplate) app.
+- from inside the mglue template folder, run `npm install`. This will install all the dependencies.
+- from inside the mglue template folder, run `npm run watch`. This will start up a development server that will refresh your game any time you make changes to the source files. by default it is running at [http://localhost:8080](http://localhost:8080).
+- Edit the game file located in `mGlueTemplate/client_src/newGame.ts`
+
+## API Overview
 
 There are a few main classes that you will interact with when making an mGlue game. Below are the major ones that you will deal with, though there are a few addition ones that you can use if you want to dig into the source cod.
 
-#### Game
+A note to users, these docs were produced by hand, so they may be out of date, or not exactly match the behavior of the api. I did my best to accurately represet the api, but feel free to dig in to the `client_src` folder if you want to make sure.
+
+### Game
 
 The game class handles the main game loop, moving between the title screen and the game itself. It also manages highscores for local play.
 
-##### Properties
+#### Properties
 **score : number**
 The current games score. Update this to update the score display in the corner. The value of this property is used to calculate and display highscores when the game ends.
 
@@ -43,7 +56,7 @@ a string which is either "game" or "title" depending on the current game state. 
 **gameOver : boolean**
 helper property for the above function. Is true if currently on the title screen.
 
-##### Functions
+#### Functions
 **endGame() : void**
 Call this function to end the current game, and return to the title screen. It is possible to override this function, just make sure to call the base function to get proper state transitions and score saving.
 
@@ -88,10 +101,10 @@ class MyGame extends Game
 }
 ```
 
-#### Actor
+### Actor
 This is the basic building block of your game. You are going to make a bunch of these, and have them react to input and interact with each other via collisions.
 
-##### Properties
+#### Properties
 **drawing : Drawing**
 The main drawing for this actor. Modify this to have the actor automatically drawn on screen. This drawing is also used for detecting collisions.
 
@@ -119,7 +132,7 @@ A reference to the group that the actor belongs to.
 **static totalCount : number**
 A total count of actors in the game. Useful for debugging leaking actors that didn't get destroyed.
 
-##### Functions
+#### Functions
 **begin(...) : void**
 Override this function to do initial setup for an actor. Normally used for setting intial position and setting up the drawing. Parameters that are passed to the constructor are passed through here.
 
@@ -181,15 +194,15 @@ update()
 }
 ```
 
-#### Drawing
+### Drawing
 How you get visuals on the screen. There are functions to add rectangles to a drawing in a variety of ways. Drawings are also used for collision detection between actors.
 
 Generally you interact with a drawing by calling a number of functions on it to define the rectangles that compose it. These functions maintain internal state on the drawing, and many functions take into account what state the prior function set.
 
-##### Properties
+#### Properties
 The drawing class has a few properties, but you shouldn't use them. Future versions may add safe ways to access the internal properties, but it isn't a good idea right now.
 
-##### Functions
+#### Functions
 Most of the functions within the drawing class return the instance that the function is being called on, for easy chaining. 
 
 **setColor(Color) : Drawing**
@@ -228,10 +241,10 @@ Add a rectangle made up of a bunch of smaller rectangles. Has the same parameter
 
 Because all drawings in the game are axis aligned rectangles, if you want to visually show a box rotating, it must be made of smaller boxes. The boxes that make up this larger box are set to no less that 0.01 size.
 
-#### Mouse
+### Mouse
 Get input data from the mouse or touchscreen. The touchscreen emulates mouse behavior, so you just need to use this single class. All properties are static. The mouse only supports a single button, and the touch only supports a single touch.
 
-##### Properties
+#### Properties
 **position : Vector**
 The mouses position in the game, clamped to 0-1. If it is a touch, it is the last position that the touch was down in.
 
@@ -241,7 +254,7 @@ is the mouse button currently being held down.
 **pressedThisFrame : boolean**
 did the mouse button go down on this frame (a click event)
 
-##### Functions
+#### Functions
 while there are functions available, you should not use them. I forgot to mark them private, whoops.
 
 A basic example that moves an actor to the left or right each time the mouse is clicked.
@@ -263,9 +276,9 @@ update()
 }
 ```
 
-#### Keyboard
+### Keyboard
 basic class for accessing information about keys the player is holding down.
-##### Properties
+#### Properties
 
 **static keyDown : boolean[]**
 An array containing true if any key is being held down. Indexed by keycode.
@@ -276,19 +289,19 @@ An array containing true if any key is being held down. Indexed by keycode.
 **static DOWN : number**
 read only helper values containing the keycodes for the arrow keys.
 
-##### Functions
+#### Functions
 Like the mouse class, there are functions here, but only because I forgot to mark them private. Don't use.
 
-#### Vector 
+### Vector 
 A basic 2d vector class.
 
-##### Properties
+#### Properties
 **x : number**
 the x component of the vector.
 **y : number**
 the y component of the vector.
 
-##### Functions
+#### Functions
 
 **constructor(x:number, y:number)**
 creates a new Vector
@@ -326,7 +339,7 @@ adds a vector which points _angle_ degrees, that is _amount_ long, to the curren
 **onScreen() : boolean**
 returns true if the point represented by this vector is between 0-1 in both components.
 
-#### Color
+### Color
 Used for setting drawing states. Currently the following colors are available via a static property like `Color.red`
 
         black   		: "#000000",
