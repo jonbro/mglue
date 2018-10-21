@@ -263,11 +263,96 @@ update()
 }
 ```
 
-#### Vector 
+#### Keyboard
+basic class for accessing information about keys the player is holding down.
 ##### Properties
+
+**static keyDown : boolean[]**
+An array containing true if any key is being held down. Indexed by keycode.
+
+**static LEFT : number**
+**static RIGHT : number**
+**static UP : number**
+**static DOWN : number**
+read only helper values containing the keycodes for the arrow keys.
+
+##### Functions
+Like the mouse class, there are functions here, but only because I forgot to mark them private. Don't use.
+
+#### Vector 
+A basic 2d vector class.
+
+##### Properties
+**x : number**
+the x component of the vector.
+**y : number**
+the y component of the vector.
+
 ##### Functions
 
+**constructor(x:number, y:number)**
+creates a new Vector
 
+**set(x:number, y:number)**
+sets the values in an existing vector.
 
+**set(v:Vector)**
+copies the components from _v_ to this vector.
+
+**copy() : Vector**
+returns a copy of this vector. Many functions mutate the internal values of a vector, so make sure to copy vectors if you don't want them to be mutated before performing operations on them.
+
+**add(other:Vector):Vector**
+**subtract(other:Vector):Vector**
+**multiply(scalar:number):Vector**
+**divide(scalar:number):Vector**
+perform the operation, modifing the instance this function is called on. Returns the instance to be used for chaining.
+
+**length() : number**
+returns the length of this vector.
+
+**normalize() : Vector**
+normalizes this vector and returns it.
+
+**rotate(angle : number) : Vector**
+rotates this vector by _angle_ degrees, and returns it.
+
+**rotation() : number**
+returns the angle that this vector is pointing, in degrees.
+
+**addDirection(angle:number, amount:number)**
+adds a vector which points _angle_ degrees, that is _amount_ long, to the current vector. For example `(new Vector(0,0)).addDirection(90,0.1);` would result in a vector(0, 0.1) because 90 degrees is pointing downwards.
+
+**onScreen() : boolean**
+returns true if the point represented by this vector is between 0-1 in both components.
+
+#### Color
+Used for setting drawing states. Currently the following colors are available via a static property like `Color.red`
+
+        black   		: "#000000",
+        white			: "#FFFFFF",
+        grey			: "#9d9d9d",
+        darkgrey		: "#697175",
+        lightgrey		: "#cccccc",
+        gray			: "#9d9d9d",
+        darkgray		: "#697175",
+        lightgray		: "#cccccc",
+        red				: "#be2633",
+        darkred			: "#732930",
+        lightred		: "#e06f8b",
+        brown			: "#a46422",
+        darkbrown		: "#493c2b",
+        lightbrown		: "#eeb62f",
+        orange			: "#eb8931",
+        yellow 			: "#f7e26b",
+        green			: "#44891a",
+        darkgreen		: "#2f484e",
+        lightgreen		: "#a3ce27",
+        blue			: "#1d57f7",
+        lightblue		: "#B2DCEF",
+        darkblue		: "#1B2632",
+        purple			: "#342a97",
+        pink			: "#de65e2"
+ 
 
 
