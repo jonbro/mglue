@@ -33,6 +33,188 @@ The best way to get started with the project is as follows:
 - from inside the mglue template folder, run `npm run watch`. This will start up a development server that will refresh your game any time you make changes to the source files. by default it is running at [http://localhost:8080](http://localhost:8080).
 - Edit the game file located in `mGlueTemplate/client_src/newGame.ts`
 
+## Tutorial
+
+The following steps will get you making a simple game.
+
+The most basic game is as follows. You should have more than this already in the template file, but go ahead and delete it. We want to start from scratch so you can understand what is happening.
+
+```
+// this line puts the mglue classes inside the m variable.
+// you might see code that moves the classes directly into the
+// namespace of your file, but those are just shorthand and not necessary
+import * as m from "mglue";
+
+// extend the Game class. We will fill this out shortly.
+class BasicGame extends m.Game
+{}
+
+// declare a variable that will hold your game
+var g : BasicGame;
+
+// this function is called when the webpage is up and running.
+// the callback provided creates an instance of the basic game and stores it in the variable declared earlier.
+m.Game.runOnReady(()=>{
+    g = new BasicGame();
+});
+
+```
+
+With the above code, you should have a simple title screen up and running. You will notice that if you follow the directions `[TAP / PRESS SPACE]` then you will get to a black screen. This is because we haven't added anything to the game. Secondarily, the game is called `GAME TITLE` which is a wierd name for a game.
+
+Lets fix those two issues, by adding the following code.
+
+```
+class Player extends m.Actor
+{
+    begin()
+    {
+        // make the player be represented by a small square
+        this.drawing
+            .addRect(0.05);
+
+        // put the player in the top middle of the screen
+        this.setPosition(0.5, 0.25);
+    }
+}
+
+class BasicGame extends m.Game
+{
+    onBeginGame()
+    {
+        new Player();
+    }
+}
+
+// then anywhere in the file, you can add the following code.
+// configure the game name
+m.Config.title = "FREELY SKIII";
+// and the save file key
+m.Config.saveName = "freelySkiii"
+
+```
+**A note about strings** any text that appears in the game _must_ be ALL CAPS. This is because the font embedded in the engine only supports uppercase letters. If you attempt to use lowercase, it will cause the game to throw errors.
+
+With the above code, you should see that your game name has changed, and when you attempt to start the game, you get a white square on screen. That is your player.
+
+We still don't have a lose conditions, so the game goes on forever. Lets add a way to lose. 
+
+```
+// in our game, trees will be the enemy, so add a class for them
+class TreeEnemy extends m.Actor
+{
+    begin()
+    {
+        // the tree will be represented by a green rectangle
+        this.drawing
+            .setColor(m.Color.green)
+            .addRect(0.02, 0.04);
+        // it will start at a random position at the bottom of the screen
+        // and move upwards
+        this.setPosition(new m.Vector(m.Random.value(), 1));
+        this.setVelocity(new m.Vector(0, -0.01);
+    }
+    update()
+    {
+        // if this and the player overlap
+        this.checkOverlap(Player, (p:any)=>{
+            // kill this tree
+            this.destroy();
+            // kill the player
+            p.destroy();
+            // end the game
+            g.endGame();
+        });
+        // finally, if this tree goes off the screen, destroy it.
+        if(this.position.y < 0)
+        {
+            this.destroy();
+        }
+    }
+}
+// inside your BasicGame class, add the following function
+class BasicGame extends m.Game
+{
+    update()
+    {
+        // if the game hasn't ended, then every 20 frames add a new tree
+        if(!this.gameOver && this.ticks%20==0)
+        {
+            new TreeEnemy();
+        }
+    }
+}
+```
+
+The game is slightly better, but now its just a matter of the random number generator being kind to you. Let's add a way to control the player so you can dodge the trees.
+
+```
+// inside the player class add the following function.
+class Player extends m.Actor
+{
+   update()
+   {
+        let steeringSpeed = 0.01;
+        // may as well support keyboard, mouse and touchscreen, no reason not to :)
+        if((m.Mouse.isPressed && m.Mouse.position.x < 0.5) || m.Keyboard.keyDown[m.Keyboard.LEFT])
+        {
+            // mglue adds a few extension methods to numbers
+            // which are helpful for simple game stuff.
+            // clamp can take a min and max value, or by default clamps to 0-1
+            this.position.x = (this.position.x-steeringSpeed).clamp();
+        }
+        else if((m.Mouse.isPressed && m.Mouse.position.x >= 0.5) || m.Keyboard.keyDown[m.Keyboard.RIGHT])
+        {
+            this.position.x = (this.position.x+steeringSpeed).clamp();
+        }
+   }
+}
+```
+
+nearly there! We are at ~100 lines of code, and we have more or less a game all together. The last thing we are going to add is a quick class of "score things" so that there is a bit of an object for the game.
+
+```
+class ScoreThing extends m.Actor
+{
+    begin()
+    {
+        // the tree will be represented by a green rectangle
+        this.drawing
+            .setColor(m.Color.yellow)
+            .addRect(0.03); 
+        this.setPosition(new m.Vector(m.Random.value(), 1));
+        this.setVelocity(new m.Vector(0, -0.01));
+    }
+    update()
+    {
+        // if this and the player overlap
+        this.checkOverlap(Player, (p:any)=>{
+            // remove this score thing
+            this.destroy();
+            // raise the game score by one
+            g.score++;
+            // pop out some particle effects
+            let particle = new m.ParticleSystem();
+		    particle.position.set(this.position);
+            particle.color = m.Color.yellow;
+		    particle.count = 10;
+        });
+        // this should be familiar from the tree code
+        if(this.position.y < 0)
+        {
+            this.destroy();
+        }
+    }
+}
+// and we need the score things to spawn, so add the following to the game update loop
+if(!this.gameOver && this.ticks%40==0)
+{
+    new ScoreThing();
+}
+```
+
+and there you go! a fully formed game with local highscores. I leave making it into an interesting game as an excercise for the reader. You might want to try adding a difficulty curve, or changing the way that the skiier moves across the play field.
+
 ## API Overview
 
 There are a few main classes that you will interact with when making an mGlue game. Below are the major ones that you will deal with, though there are a few addition ones that you can use if you want to dig into the source cod.
