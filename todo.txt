@@ -3,15 +3,11 @@
     and https://docs.npmjs.com/cli/run-script
     - react has this create system `npx create-react-app my-app` which probably works with yeoman as well
     - see if I can lower the number of dependencies in mglue dependent projects -- make a simple template
-- lower the number of dependencies in package.json (move to main repo)
-- create a template git repo
 - better letterboxing on mobile
 - sound on mobile
 - mute button in the html (store mute state too)
 - make the gif capture support frame dropping
-- save name in the config should bail with an error if not set
+- save name in the config should use the game name if missing
 - pause game when focus is lost on the page
 - rewrite the public api of the sound to be more sensible
-- look into replacing npm with yarn
 - on touch, switch to the last touch down when a touch is removed
-- write up a better readme file
