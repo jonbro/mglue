@@ -113,4 +113,9 @@ export class Vector
     {
         return this.x >= 0 && this.x <= 1 && this.y >= 0 && this.y <= 1;
     }
+    equal(other : Vector)
+    : boolean
+    {
+        return this.x == other.x && this.y == other.y;
+    }
 }
