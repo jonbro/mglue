@@ -1011,6 +1011,7 @@ var Actor = /** @class */ (function () {
     };
     Actor.prototype.setPosition = function (p) {
         this.position.set(p.x, p.y);
+        this.updateDrawing();
         return this;
     };
     Actor.prototype.setVelocity = function (velocity) {
@@ -1019,10 +1020,14 @@ var Actor = /** @class */ (function () {
     };
     Actor.prototype.lateUpdate = function () {
         this.position.add(this.velocity);
-        this.drawing.rotation = this.rotation;
-        this.drawing.position.set(this.position.x, this.position.y);
+        this.updateDrawing();
         this.drawing.draw();
         this.age++;
+    };
+    Actor.prototype.updateDrawing = function () {
+        this.drawing.rotation = this.rotation;
+        this.drawing.position.set(this.position.x, this.position.y);
+        this.drawing.scale.set(this.scale.x, this.scale.y);
     };
     /**
      * Collision handling method.
@@ -1303,7 +1308,7 @@ var DrawingRect = /** @class */ (function () {
         this.currentSize = new Vector_1.Vector(0, 0);
     }
     DrawingRect.prototype.updateState = function (drawing) {
-        this.currentPosition.set(this.offsetX, this.offsetY);
+        this.currentPosition.set(this.offsetX * drawing.scale.x, this.offsetY * drawing.scale.y);
         this.currentPosition.rotate(drawing.rotation);
         this.currentPosition.add(drawing.position);
         this.currentSize.set(this.width * drawing.scale.x, this.height * drawing.scale.y);

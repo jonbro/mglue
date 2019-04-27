@@ -137,7 +137,7 @@ class DrawingRect
     { }
     updateState(drawing : Drawing)
     {
-        this.currentPosition.set(this.offsetX, this.offsetY);
+        this.currentPosition.set(this.offsetX*drawing.scale.x, this.offsetY*drawing.scale.y);
         this.currentPosition.rotate(drawing.rotation);
         this.currentPosition.add(drawing.position);
         this.currentSize.set(this.width*drawing.scale.x, this.height*drawing.scale.y);
@@ -158,7 +158,7 @@ class DrawingRect
         if(!this.hasCollision || !other.hasCollision)
         {
             return false;
-        }       
+        } 
         return Math.abs(this.currentPosition.x - other.currentPosition.x) < (this.currentSize.x + other.currentSize.x) / 2 && Math.abs(this.currentPosition.y - other.currentPosition.y) < (this.currentSize.y + other.currentSize.y) / 2;
     }
 }

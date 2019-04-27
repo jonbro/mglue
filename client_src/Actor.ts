@@ -129,6 +129,7 @@ export class Actor
     : Actor
     {
         this.position.set(p.x, p.y);
+        this.updateDrawing();
         return this;
     }
     setVelocity(velocity : Vector)
@@ -140,10 +141,15 @@ export class Actor
     lateUpdate()
     {
         this.position.add(this.velocity);
-        this.drawing.rotation = this.rotation;
-        this.drawing.position.set(this.position.x, this.position.y);
+        this.updateDrawing();
         this.drawing.draw();
         this.age++;
+    }
+    updateDrawing()
+    {
+        this.drawing.rotation = this.rotation;
+        this.drawing.position.set(this.position.x, this.position.y);
+        this.drawing.scale.set(this.scale.x, this.scale.y);
     }
     /**
      * Collision handling method.
