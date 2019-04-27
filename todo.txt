@@ -1,17 +1,16 @@
-- move all the server / script stuff into the main repo
-    - it seems like you can provide for doing stuff like `npm run mglue server` with https://docs.npmjs.com/files/package.json#bin
-    and https://docs.npmjs.com/cli/run-script
-    - react has this create system `npx create-react-app my-app` which probably works with yeoman as well
-    - see if I can lower the number of dependencies in mglue dependent projects -- make a simple template
-- lower the number of dependencies in package.json (move to main repo)
-- create a template git repo
+- an ascii art based image editor would be really nice - I end up drawing things that use a grid pretty regularly, so the fact that i have the ability to do non gridded things isn't critical... also drawings are incredibly slow in the current version.
+- add api docs for the following
+    - text actor
+    - particle actor (fix defaults)
+    - sound (its really rough right now, maybe fix this)
+    - random
+    - number extensions
+- display extension / overrides exist, maybe write a simple one?
 - better letterboxing on mobile
 - sound on mobile
 - mute button in the html (store mute state too)
 - make the gif capture support frame dropping
-- save name in the config should bail with an error if not set
+- save name in the config should use the game name if missing
 - pause game when focus is lost on the page
 - rewrite the public api of the sound to be more sensible
-- look into replacing npm with yarn
 - on touch, switch to the last touch down when a touch is removed
-- write up a better readme file
