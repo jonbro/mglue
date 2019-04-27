@@ -170,6 +170,9 @@ var Vector = /** @class */ (function () {
     Vector.prototype.onScreen = function () {
         return this.x >= 0 && this.x <= 1 && this.y >= 0 && this.y <= 1;
     };
+    Vector.prototype.equal = function (other) {
+        return this.x == other.x && this.y == other.y;
+    };
     return Vector;
 }());
 exports.Vector = Vector;
