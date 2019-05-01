@@ -5,6 +5,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
+        exclude: /examples/,
         use: 'ts-loader'
       }
     ]

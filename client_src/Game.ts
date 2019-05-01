@@ -6,6 +6,7 @@ import { Mouse } from "./Mouse";
 import { Vector } from "./Vector";
 import { Keyboard } from "./Keyboard"
 import { Leaderboard } from "./Leaderboard";
+import { Fiber } from "./Fiber"
 import "./Extensions";
 import { cat } from "shelljs";
 
@@ -54,6 +55,7 @@ class Game
     protected highScore : number = -1;
     private _ticks : number = 0;
     private saveSupported : boolean = false;
+    private fibers : Fiber[] = [];
     /** actor used to display the leaderboard */
     protected leaderboardText : TextActor = new TextActor("");
     /** helper strings for ordinals */
@@ -146,6 +148,13 @@ class Game
         this.transitionToTitle();
         this.currentState = "title";
         this.onEndGame();
+        this.fibers = [];
+    }
+    public newFiber()
+    {
+      let res = new Fiber();
+      this.fibers.push(res);
+      return res;
     }
     protected onBeginGame(){}
     protected onEndGame(){}
@@ -290,6 +299,28 @@ class Game
         this._ticks++;
         this.update();
         Actor.update();
+        // should maybe have collected way to handle this, so I don't have to
+      // copy to the actors
+        // update this fiber group
+        let i = 0;
+        while(true)
+        {
+          if(i >= this.fibers.length)
+          {
+            break;
+          }
+          let f = this.fibers[i];
+          if(f.isDestroying)
+          {
+            this.fibers.splice(i, 1);
+          }
+          else
+          {
+            f.update();
+            i++;
+          }
+        }
+
         if(this.currentState == "title")
         {
             this.updateTitle();

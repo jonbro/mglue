@@ -1,5 +1,6 @@
 import { DisplayInterface } from "./Display";
 import { TextActor } from "./Actor";
+import { Fiber } from "./Fiber";
 import "./Extensions";
 declare class Game {
     private static _INTERVAL;
@@ -14,6 +15,7 @@ declare class Game {
     protected highScore: number;
     private _ticks;
     private saveSupported;
+    private fibers;
     /** actor used to display the leaderboard */
     protected leaderboardText: TextActor;
     /** helper strings for ordinals */
@@ -27,6 +29,7 @@ declare class Game {
     /** Helper function to run the game after the window loads, or if the window is ready, immediately */
     static runOnReady(fn: Function): void;
     endGame(): void;
+    newFiber(): Fiber;
     protected onBeginGame(): void;
     protected onEndGame(): void;
     protected update(): void;

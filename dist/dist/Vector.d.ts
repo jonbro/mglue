@@ -29,4 +29,5 @@ export declare class Vector {
     /** Returns a copy of this vector */
     copy(): Vector;
     onScreen(): boolean;
+    equal(other: Vector): boolean;
 }

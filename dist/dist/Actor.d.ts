@@ -71,6 +71,7 @@ export declare class Actor {
     setPosition(p: Vector): Actor;
     setVelocity(velocity: Vector): Actor;
     lateUpdate(): void;
+    updateDrawing(): void;
     /**
      * Collision handling method.
      *

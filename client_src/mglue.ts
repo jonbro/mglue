@@ -11,5 +11,6 @@ export {Drawing, TextDrawer} from "./Drawing"
 export {Leaderboard} from "./Leaderboard"
 export {Game} from "./Game"
 export {Sound} from "./Sound"
+export {Fiber} from "./Fiber"
 import "./Extensions"
 /**/
