@@ -27,7 +27,7 @@
     "jekyll": "^3.0.0-beta1",
     "nodemon": "^1.11.0",
     "ts-loader": "^3.2.0",
-    "typedoc": "^0.11.1",
+    "typedoc": "^0.14.2",
     "typescript": "^2.4.2",
     "webpack": "^3.5.3",
     "webpack-dev-server": "^2.7.1",
