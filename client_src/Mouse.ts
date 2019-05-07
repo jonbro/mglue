@@ -24,7 +24,6 @@ export class Mouse
     static onMouseDown(e:any)
     {
         Display.element.focus();
-        console.log("focusing?", document.activeElement, Display.element);
         Mouse.isPressed = true;
         Mouse.onMouseMove(e);
     }
