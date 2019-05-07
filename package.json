@@ -1,6 +1,6 @@
 {
   "name": "mglue",
-  "version": "1.0.0-prerelease.2",
+  "version": "1.0.0-prerelease.3",
   "description": "tiny game library",
   "main": "dist/index.js",
   "module": "dist/index.js",
