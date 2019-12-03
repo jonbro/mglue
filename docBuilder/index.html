@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>MGLUE DOCS</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/highlight.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+</head>
+<body>
+  <div id="toc">
+    <h5>MGLUE</h5>
+    <b>Game</b>
+    <ul>
+      <li>constructor</li>
+      <li>currentState</li>
+      <li>highScore</li>
+      <li>lastScore</li>
+      <li>leaderboardEnabled</li>
+      <li>leaderboardText</li>
+      <li>score</li>
+      <li>display</li>
+      <li>gameOver</li>
+      <li>ticks</li>
+      <li>INTERVAL</li>
+      <li>enableLeaderboard</li>
+      <li>endGame</li>
+      <li>onBeginGame</li>
+      <li>onEndGame</li>
+      <li>update</li>
+      <li>updateLeaderboard</li>
+      <li>updateTitle</li>
+      <li>runOnReady</li>
+    </ul>
+    <b>Actor</b>
+    <ul>
+      <li>constructor</li>
+      <li>age</li>
+      <li>drawing</li>
+      <li>group</li>
+      <li>isDestroying</li>
+      <li>position</li>
+      <li>rotation</li>
+      <li>scale</li>
+      <li>velocity</li>
+      <li>totalCount</li>
+      <li>begin</li>
+      <li>checkOverlap</li>
+      <li>destroy</li>
+      <li>initialize</li>
+      <li>lateUpdate</li>
+      <li>setDisplayPriority</li>
+      <li>setPosition</li>
+      <li>setVelocity</li>
+      <li>update</li>
+      <li>clear</li>
+      <li>getGroup</li>
+      <li>scroll</li>
+      <li>sortGroups</li>
+      <li>update</li>
+    </ul>
+    <b>ActorGroup</b>
+    <ul>
+      <li>constructor</li>
+      <li>displayPriority</li>
+      <li>members</li>
+      <li>name</li>
+      <li>clear</li>
+      <li>update</li>
+    </ul>
+    <b>Drawing</b>
+    <ul>
+      <li>hasCollision</li>
+      <li>position</li>
+      <li>rotation</li>
+      <li>scale</li>
+      <li>addArc</li>
+      <li>addRect</li>
+      <li>addSegementedRect</li>
+      <li>draw</li>
+      <li>isOverlapping</li>
+      <li>mirrorX</li>
+      <li>mirrorY</li>
+      <li>setColor</li>
+      <li>setPosition</li>
+      <li>setRotation</li>
+      <li>updateState</li>
+    </ul>
+    <b>Sound</b>
+    <ul>
+      <li>constructor</li>
+      <li>play</li>
+      <li>playNow</li>
+      <li>playPattern</li>
+      <li>remove</li>
+      <li>setFromParams</li>
+      <li>setPattern</li>
+      <li>generateDrumParams</li>
+      <li>generateDrumPattern</li>
+      <li>generateParams</li>
+      <li>initialize</li>
+      <li>setSeed</li>
+      <li>update</li>
+    </ul>
+    <b>Vector</b>
+    <ul>
+      <li>constructor</li>
+      <li>x</li>
+      <li>y</li>
+      <li>add</li>
+      <li>addDirection</li>
+      <li>copy</li>
+      <li>directionTo</li>
+      <li>divide</li>
+      <li>length</li>
+      <li>multiply</li>
+      <li>normalize</li>
+      <li>onScreen</li>
+      <li>rotate</li>
+      <li>rotation</li>
+      <li>set</li>
+      <li>subtract</li>
+      <li>distance</li>
+    </ul>
+  </div>
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div id="content">
+      <h5>Game</h5>
+      <div class="lead">
+        <p></p>
+      </div>
+      
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          actor used to display the leaderboard
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          number of frames that has elapsed since the game started
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Helper function to run the game after the window loads, or if the window is ready, immediately
+          
+        </p>        
+      <h5>Actor</h5>
+      <div class="lead">
+        <p>You are going to make your game out of a pile of these.
+Contains very basic movement, updating, and drawing.
+Also where you handle overlap detection and removing things from groups.</p>
+      </div>
+      <pre><code><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Enemy</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Actor</span></span>
+{
+     begin()
+     {
+
+         <span class="hljs-comment">// this actor will move down the screen 1/100 of the distance per frame</span>
+         <span class="hljs-comment">// velocity is automatically integrated after the update call</span>
+         <span class="hljs-keyword">this</span>.velocity.set(<span class="hljs-number">0</span>, <span class="hljs-number">0.01</span>);
+
+         <span class="hljs-comment">// setup the drawing that will be used for this actor</span>
+         <span class="hljs-comment">// drawn to the screen after every update</span>
+         <span class="hljs-keyword">this</span>.drawing
+             .setColor(<span class="hljs-type">Color</span>.red)
+             .addRect(<span class="hljs-number">0.01</span>);
+     }
+     update()
+     {
+         <span class="hljs-comment">// check if this object is overlapping an actor of type Player</span>
+         <span class="hljs-keyword">this</span>.checkOverlap(<span class="hljs-type">Player</span>, (p:player)=&gt;{
+             <span class="hljs-comment">// destroy the player that is overlapped</span>
+             p.destroy();
+         });
+     }
+}
+</code></pre><p>The drawing property is also what is used for overlap checks between actors, so if you want differently sized hitboxes,
+make sure to add additional drawings to your actor.</p>
+
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          Number of frames the actor has been alive for.
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          Default drawing for the actor. This drawing is automatically added to the game during update.
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          group this actor belongs to
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          Current position of the actor. Used for both drawing and overlap checks.
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          Rotation of the actor in degrees.
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          How fast the actor is moving. This value is added to the actors position every update loop.
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          Number of actors in the game.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Collision handling method.
+          <p>Returns true if an overlap is found.
+Uses the .drawing property on the actor to check for overlaps between quads.
+Call during the Actors update function.</p>
+<pre><code>update()
+{
+     <span class="hljs-keyword">this</span>.checkOverlap(Enemy, <span class="hljs-function"><span class="hljs-params">(e : Enemy)</span>=&gt;</span>{
+          <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"overlapping enemy!"</span>);
+          e.kill();
+     });
+}
+</code></pre>
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Mark this actor to be removed from the game at the end of the current update loop.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Override this function, it will be called every frame while the actor is in the game.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Adds a vector value to all actors within a class, or a group of classes. Can be used to simulate camera type effects.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+      <h5>ActorGroup</h5>
+      <div class="lead">
+        <p>Collection of Actors. Each new actor subclass generates a group, though you can create further ones if necessary.
+Actors are automatically added to their class group on creation.
+The main actor groups are tracked by &#x60;Game&#x60; to handle updating, so don&#x27;t mess with them too much.</p>
+      </div>
+      <p>Most accessing of this class happens through the actor class.</p>
+<pre><code><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Player</span> <span class="hljs-title">extents</span> <span class="hljs-title">Actor</span> </span>{}
+<span class="hljs-keyword">let</span> p = <span class="hljs-keyword">new</span> Player();
+<span class="hljs-keyword">if</span>(Actor.getGroup(Player).members[<span class="hljs-number">0</span>] == p)
+{
+     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"you found the player!"</span>);
+}
+</code></pre>
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+      <h5>Drawing</h5>
+      <div class="lead">
+        <p></p>
+      </div>
+      
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+      <h5>Sound</h5>
+      <div class="lead">
+        <p></p>
+      </div>
+      
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          schedules the sound to play at the next quantized time
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Plays the sound as a looping pattern.
+Will throw an error if the sound doesn&#x27;t have a pattern defined.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          removes a playing sound from the scheduled sounds.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          call to set up all static properties
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Change the seed that is used by the Sound internal Random instance.
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          call once per frame to update all playing loops, and play sounds that are linked to quantization.
+          
+        </p>        
+      <h5>Vector</h5>
+      <div class="lead">
+        <p></p>
+      </div>
+      
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          
+          <ul class="tsd-signatures ">
+          </ul>
+          
+          <ul class="tsd-descriptions">
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          Returns a copy of this vector
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object],[object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+        <p>
+          [object Object]
+          <ul class="tsd-signatures ">
+                  <li class="tsd-signature tsd-kind-icon"></li>
+          </ul>
+          
+          <ul class="tsd-descriptions">
+                  <li class="tsd-description">
+                          <aside class="tsd-sources">
+          </aside>
+          
+          
+              <h4 class="tsd-parameters-title">Parameters</h4>
+              <ul class="tsd-parameters">
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+                      <li>
+                          <h5></h5>
+          
+                          
+                      </li>
+              </ul>
+          
+              <h4 class="tsd-returns-title">Returns </h4>
+          
+          
+                  </li>
+          </ul>          
+          
+        </p>        
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
