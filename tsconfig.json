@@ -5,13 +5,12 @@
         "target": "es5",
         "sourceMap": true,
         "declaration": true,
-        //"outFile": "dist/mglue.js"
         "outDir": "dist",
-        //"declarationDir": "."
     },
     "exclude": [
         "node_modules",
         "dist",
-        "docs"
+        "docs",
+        "examples"
     ]
 }
